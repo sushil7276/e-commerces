@@ -1,0 +1,34 @@
+
+
+# Backend
+/E-backend/dist
+/E-backend/node_modules
+/E-backend/package-lock.json
+/E-backend/.env
+
+
+
+# Logs
+/E-frontend/logs
+/E-frontend/.log
+/E-frontend/npm-debug.log*
+/E-frontend/yarn-debug.log*
+/E-frontend/yarn-error.log*
+/E-frontend/pnpm-debug.log*
+/E-frontend/lerna-debug.log*
+
+/E-frontend/node_modules
+/E-frontend/dist
+/E-frontend/dist-ssr
+/E-frontend/.local
+
+# Editor directories and files
+/E-frontend/.vscode/*
+/E-frontend/!.vscode/extensions.json
+/E-frontend/.idea
+/E-frontend/.DS_Store
+/E-frontend/*.suo
+/E-frontend/*.ntvs*
+/E-frontend/*.njsproj
+/E-frontend/*.sln
+/E-frontend/*.sw?

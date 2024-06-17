@@ -1,0 +1,83 @@
+.search {
+  width: 100%;
+  padding: 2rem;
+  @include flex(row, flex-start, stretch, 2rem);
+  height: (100vh - 6.5vh);
+
+  > aside {
+    min-width: 20rem;
+    padding: 2rem;
+    @include flex(column, flex-start, stretch);
+    @include baseShadow;
+
+    > h1 {
+      text-align: start;
+    }
+
+    > div {
+      width: 100%;
+      @include flex(column, flex-start, stretch);
+
+      > label {
+        font-weight: 700;
+      }
+
+      > input,
+      > select {
+        @include inputStyle(
+          100%,
+          1rem,
+          $color1,
+          1px solid rgba(154, 154, 154, 0.38)
+        );
+        border-radius: 5px;
+        margin: 0.5rem;
+      }
+    }
+  }
+
+  > main {
+    padding: 0 2rem;
+    width: 100%;
+    @include flex(column, flex-start, stretch);
+
+    > h1 {
+      text-align: start;
+    }
+
+    > input {
+      @include inputStyle(50%);
+      margin: 1rem;
+      border-radius: 5px;
+      font-size: 1.2rem;
+      display: block;
+    }
+
+    .card {
+      @include flex(row, flex-start, flex-start);
+      flex-wrap: wrap;
+      height: calc(100% - 10rem);
+      overflow-y: auto;
+
+      &::-webkit-scrollbar {
+        display: none;
+      }
+    }
+
+    article {
+      @include flex;
+
+      > button {
+        @include flex;
+        @include btn(0.5rem 1rem, $color3, $color1);
+        border-radius: 10px;
+
+        &:disabled {
+          cursor: not-allowed;
+          opacity: 0.5;
+          color: $color2;
+        }
+      }
+    }
+  }
+}
