@@ -6,9 +6,8 @@ import {
    SearchRequestQuery,
 } from "../types/types.js";
 import ErrorHandler from "../utils/ErrorHandler.js";
-import { Product } from "../models/product.js";
+import { Product } from "../models/product.model.js";
 import { rm } from "fs";
-import { myCache } from "../app.js";
 import { getCache, invalidateCache, setCache } from "../utils/features.js";
 // import { faker } from "@faker-js/faker";
 

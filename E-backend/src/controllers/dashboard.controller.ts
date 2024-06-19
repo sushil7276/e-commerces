@@ -1,7 +1,7 @@
 import { myCache } from "../app.js";
 import { TryCatch } from "../middlewares/error.js";
 import { Order } from "../models/order.model.js";
-import { Product } from "../models/product.js";
+import { Product } from "../models/product.model.js";
 import { User } from "../models/user.model.js";
 import { getCache, percentage, setCache } from "../utils/features.js";
 
@@ -149,27 +149,11 @@ export const stats = TryCatch(async (req, res, next) => {
          }
       });
 
-      // Categories
-      const categoriesPromise = categories.map((category) =>
-         Product.countDocuments({ category })
-      );
-
-      const categoryCount = await Promise.all(categoriesPromise);
-
-      let categoriesObj: Record<string, number>[] = [];
-      // categories.forEach((category, index) =>
-      //    categoriesObj.push({
-      //       [category]: Math.round((categoryCount[index] / productCount) * 100),
-      //    })
-      // );
-
-      for (let i = 0; i < categories.length; i++) {
-         categoriesObj.push({
-            [categories[i]]: Math.round(
-               (categoryCount[i] / productCount) * 100
-            ),
-         });
-      }
+      // Calculate Category wise Product Count
+      const categoriesObj = await categoryWiseProductCountRatio({
+         categories,
+         productCount,
+      });
 
       stats = {
          revenue,
@@ -192,4 +176,169 @@ export const stats = TryCatch(async (req, res, next) => {
    });
 });
 
-const stt = async () => {};
+export const pieCharts = TryCatch(async (req, res, next) => {
+   let charts;
+   const key = "admin-pie-charts";
+   charts = getCache(key);
+
+   if (!charts) {
+      const allOrderPromise = Order.find().select([
+         "total",
+         "discount",
+         "shippingCharges",
+         "tax",
+         "subtotal",
+      ]);
+
+      const [
+         orders,
+         categories,
+         productCount,
+         productOutOfStock,
+         allOrder,
+         allUsers,
+         allRoleAdmin,
+         allRoleUsers,
+      ] = await Promise.all([
+         Order.find(),
+         Product.distinct("category"),
+         Product.countDocuments(),
+         Product.countDocuments({ stock: 0 }),
+         allOrderPromise,
+         User.find().select("dob"),
+         User.find({ role: "admin" }),
+         User.find({ role: "user" }),
+      ]);
+
+      /* orderFulfillment Start */
+      let totalShipped = 0;
+      let totalDelivered = 0;
+      let totalProcessing = 0;
+
+      orders.forEach((order) => {
+         if (order.status === "Delivered") {
+            totalDelivered++;
+         } else if (order.status === "Shipped") {
+            totalShipped++;
+         } else {
+            totalProcessing++;
+         }
+      });
+
+      const orderFulfillment = {
+         shipped: totalShipped,
+         delivered: totalDelivered,
+         processing: totalProcessing,
+      };
+      /* orderFulfillment  End */
+
+      const categoryCount = await categoryWiseProductCountRatio({
+         categories,
+         productCount,
+      });
+
+      /* 
+       @ Calculating amount Totals of orders start 
+
+      */
+      let grossTotal = allOrder.reduce(
+         (prev, order) => prev + (order.subtotal || 0),
+         0
+      );
+      let totalAmount = allOrder.reduce(
+         (prev, order) => prev + (order.total || 0),
+         0
+      );
+      let totalTax = allOrder.reduce(
+         (prev, order) => prev + (order.tax || 0),
+         0
+      );
+      let totalDiscount = allOrder.reduce(
+         (prev, order) => prev + (order.discount || 0),
+         0
+      );
+      let totalShippingCharges = allOrder.reduce(
+         (prev, order) => prev + (order.shippingCharges || 0),
+         0
+      );
+
+      // for (let i = 0; i < orders.length; i++) {
+      //    grossTotal += orders[i].subtotal;
+      //    totalAmount += orders[i].total;
+      //    totalTax += orders[i].tax;
+      //    totalDiscount += orders[i].discount;
+      //    totalShippingCharges += orders[i].shippingCharges;
+      // }
+
+      const amount = {
+         grossTotal,
+         totalTax,
+         totalShippingCharges,
+         totalDiscount,
+         totalAmount,
+      };
+
+      /* 
+       @ Calculating amount Totals of orders End 
+       
+      */
+
+      const userAgeGroup = {
+         teen: allUsers.filter((i) => i.age < 20).length,
+         adult: allUsers.filter((i) => i.age >= 20 && i.age < 40).length,
+         old: allUsers.filter((i) => i.age >= 40).length,
+      };
+      const adminCustomer = {
+         admin: allRoleAdmin,
+         customer: allRoleUsers,
+      };
+
+      charts = {
+         amount,
+         orderFulfillment,
+         productStock: {
+            outOfStock: productOutOfStock,
+            inStock: productCount - productOutOfStock,
+         },
+         userAgeGroup,
+         adminCustomer,
+         categoryCount,
+      };
+   }
+
+   res.status(200).json({
+      success: true,
+      charts,
+   });
+});
+export const barCharts = TryCatch(async (req, res, next) => {});
+export const lineCharts = TryCatch(async (req, res, next) => {});
+
+/*
+Category wise product Count and return array
+Array of [{category:productCount}]
+*/
+const categoryWiseProductCountRatio = async ({
+   categories,
+   productCount,
+}: {
+   categories: string[];
+   productCount: number;
+}) => {
+   // Categories
+   const categoriesPromise = categories.map((category) =>
+      Product.countDocuments({ category })
+   );
+
+   const categoryCount = await Promise.all(categoriesPromise);
+
+   let categoryWiseProductCount: Record<string, number>[] = [];
+
+   categories.forEach((category, index) =>
+      categoryWiseProductCount.push({
+         [category]: Math.round((categoryCount[index] / productCount) * 100),
+      })
+   );
+
+   return categoryWiseProductCount;
+};

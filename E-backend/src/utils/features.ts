@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
 import { myCache } from "../app.js";
-import { Product } from "../models/product.js";
+import { Product } from "../models/product.model.js";
 import { OrderItem, invalidateCacheProp } from "../types/types.js";
 
 // Database Connection
@@ -85,7 +85,5 @@ export const percentage = (thisMonthCount: number, lastMonthCount: number) => {
    if (lastMonthCount === 0) {
       return thisMonthCount * 100;
    }
-   return Number(
-      (((thisMonthCount - lastMonthCount) / lastMonthCount) * 100).toFixed(0)
-   );
+   return Number(((thisMonthCount / lastMonthCount) * 100).toFixed(0));
 };
