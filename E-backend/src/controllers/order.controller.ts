@@ -190,7 +190,6 @@ const fakeOrders = async (count: number) => {
             pinCode: 416115,
          },
          user: "asdasd",
-
          subtotal: faker.commerce.price({ min: 100, max: 100000 }),
          tax: faker.commerce.price({ min: 100, max: 300 }),
          shippingCharges: faker.commerce.price({ min: 100, max: 100 }),
@@ -206,6 +205,8 @@ const fakeOrders = async (count: number) => {
                productId: "66672bafff162c3332ebae69",
             },
          ],
+         createdAt: new Date(faker.date.past()),
+         updatedAt: new Date(faker.date.recent()),
       });
       orders.push(order);
    }
@@ -213,5 +214,4 @@ const fakeOrders = async (count: number) => {
    await Order.create(orders);
    console.log({ success: true });
 };
-
- */
+*/

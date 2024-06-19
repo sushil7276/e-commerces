@@ -1,6 +1,6 @@
 import express from "express";
 import { connectDB } from "./utils/features.js";
-import { errorMiddleware } from "./middlewares/error.js";
+import { TryCatch, errorMiddleware } from "./middlewares/error.js";
 import NodeCache from "node-cache";
 import morgan from "morgan";
 import { config } from "dotenv";
