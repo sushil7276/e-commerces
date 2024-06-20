@@ -1,19 +1,28 @@
 import express from "express";
 import { connectDB } from "./utils/features.js";
-import { TryCatch, errorMiddleware } from "./middlewares/error.js";
+import { errorMiddleware } from "./middlewares/error.js";
 import NodeCache from "node-cache";
 import morgan from "morgan";
 import { config } from "dotenv";
+import Stripe from "stripe";
 
 config({
    path: "./.env",
 });
 const port = process.env.PORT || 4000;
 const mongoURl = process.env.MONGO_URL || "";
+const stipeKey = process.env.STRIPE_KEY || "";
 
 // Database Call
 connectDB(mongoURl);
+
+// Middleware for Node-Cache (Performance Optimization)
+export const myCache = new NodeCache();
+
 const app = express();
+
+// implement stripe payment method
+export const stripe = new Stripe(stipeKey);
 
 // middleware for json config
 app.use(express.json());
@@ -23,9 +32,6 @@ app.use(express.urlencoded({ extended: true }));
 
 // response status for development use.
 app.use(morgan("dev"));
-
-// Middleware for Node-Cache (Performance Optimization)
-export const myCache = new NodeCache();
 
 app.get("/", (req, res) => {
    res.send("This is just message");
