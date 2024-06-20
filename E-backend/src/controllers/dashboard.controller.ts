@@ -1,10 +1,11 @@
-import { myCache } from "../app.js";
+import { Document } from "mongoose";
 import { TryCatch } from "../middlewares/error.js";
 import { Order } from "../models/order.model.js";
 import { Product } from "../models/product.model.js";
 import { User } from "../models/user.model.js";
 import { getCache, percentage, setCache } from "../utils/features.js";
 
+// All Stats
 export const stats = TryCatch(async (req, res, next) => {
    let stats;
    const key = "admin-stats";
@@ -141,7 +142,8 @@ export const stats = TryCatch(async (req, res, next) => {
 
       lastSixMonthOrders.forEach((order) => {
          const createDate = order.createdAt;
-         const monthDifference = today.getMonth() - createDate.getMonth();
+         const monthDifference =
+            (today.getMonth() - createDate.getMonth() + 12) % 12;
 
          if (monthDifference < 6) {
             orderMonthCount[5 - monthDifference] += 1;
@@ -176,6 +178,7 @@ export const stats = TryCatch(async (req, res, next) => {
    });
 });
 
+// Pie - Charts
 export const pieCharts = TryCatch(async (req, res, next) => {
    let charts;
    const key = "admin-pie-charts";
@@ -289,8 +292,8 @@ export const pieCharts = TryCatch(async (req, res, next) => {
          old: allUsers.filter((i) => i.age >= 40).length,
       };
       const adminCustomer = {
-         admin: allRoleAdmin,
-         customer: allRoleUsers,
+         admin: allRoleAdmin.length,
+         customer: allRoleUsers.length,
       };
 
       charts = {
@@ -304,6 +307,8 @@ export const pieCharts = TryCatch(async (req, res, next) => {
          adminCustomer,
          categoryCount,
       };
+
+      setCache(key, charts);
    }
 
    res.status(200).json({
@@ -311,7 +316,86 @@ export const pieCharts = TryCatch(async (req, res, next) => {
       charts,
    });
 });
-export const barCharts = TryCatch(async (req, res, next) => {});
+
+// Bar - Charts
+export const barCharts = TryCatch(async (req, res, next) => {
+   let charts;
+   const key = "admin-bar-charts";
+
+   charts = getCache(key);
+
+   if (!charts) {
+      const today = new Date();
+      const sixMonthAgo = new Date(
+         today.getFullYear(),
+         today.getMonth() - 5,
+         1
+      );
+      const oneYearAgo = new Date(
+         today.getFullYear(),
+         today.getMonth() - 12,
+         1
+      );
+
+      const lastSixMonthUserPromise = User.find({
+         createdAt: { $gte: sixMonthAgo },
+      }).select("createdAt");
+
+      const lastSixMonthProductPromise = Product.find({
+         createdAt: { $gte: sixMonthAgo },
+      }).select("createdAt");
+
+      const twelveMonthOrderPromise = Order.find({
+         createdAt: { $gte: oneYearAgo },
+      }).select("createdAt");
+
+      const [sixMonthUser, sixMonthProduct, twelveMonthOrder] =
+         await Promise.all([
+            lastSixMonthUserPromise,
+            lastSixMonthProductPromise,
+            twelveMonthOrderPromise,
+         ]);
+
+      // const productCount = pastMonthCounting({
+      //    length: 6,
+      //    docArr: sixMonthProduct,
+      //    today,
+      // });
+
+      let productCount = pastMonthCounting({
+         length: 6,
+         docArr: sixMonthProduct,
+         today,
+      });
+
+      const userCount = pastMonthCounting({
+         length: 6,
+         docArr: sixMonthUser,
+         today,
+      });
+
+      const orderCount = pastMonthCounting({
+         length: 12,
+         docArr: twelveMonthOrder,
+         today,
+      });
+
+      charts = {
+         users: userCount,
+         products: productCount,
+         orders: orderCount,
+      };
+
+      setCache(key, charts);
+   }
+
+   return res.status(200).json({
+      success: true,
+      charts,
+   });
+});
+
+// Line - Charts
 export const lineCharts = TryCatch(async (req, res, next) => {});
 
 /*
@@ -341,4 +425,29 @@ const categoryWiseProductCountRatio = async ({
    );
 
    return categoryWiseProductCount;
+};
+
+interface MyDocument extends Document {
+   createdAt: Date;
+}
+
+type PastMonthArrayType = {
+   length: number;
+   docArr: MyDocument[];
+   today: Date;
+};
+
+const pastMonthCounting = ({ length, docArr, today }: PastMonthArrayType) => {
+   // Create Array for past month value store
+   let data: number[] = new Array(length).fill(0);
+
+   docArr.forEach((i) => {
+      const createDate = i.createdAt;
+      const monthDiff = (today.getMonth() - createDate.getMonth() + 12) % 12;
+
+      if (monthDiff < length) {
+         data[length - monthDiff - 1] += 1;
+      }
+   });
+   return data;
 };
