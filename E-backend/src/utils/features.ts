@@ -1,5 +1,6 @@
 import mongoose from "mongoose";
 import { myCache } from "../app.js";
+import { keySet } from "../controllers/dashboard.controller.js";
 import { Product } from "../models/product.model.js";
 import { OrderItem, invalidateCacheProp } from "../types/types.js";
 
@@ -12,7 +13,7 @@ export const connectDB = (url: string) => {
 };
 
 // Revalidate Cache || Delete Cache
-export const invalidateCache = async ({
+export const invalidateCache = ({
    product,
    order,
    admin,
@@ -50,6 +51,10 @@ export const invalidateCache = async ({
 
    if (coupon) {
       myCache.del("coupons-all");
+   }
+
+   if (admin) {
+      myCache.del(keySet);
    }
 };
 

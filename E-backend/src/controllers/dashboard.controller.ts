@@ -5,10 +5,17 @@ import { Product } from "../models/product.model.js";
 import { User } from "../models/user.model.js";
 import { getCache, percentage, setCache } from "../utils/features.js";
 
+export const keySet = [
+   "admin-stats",
+   "admin-pie-charts",
+   "admin-bar-charts",
+   "admin-line-charts",
+];
+
 // All Stats
 export const stats = TryCatch(async (req, res, next) => {
    let stats;
-   const key = "admin-stats";
+   const key = keySet[0];
 
    stats = getCache(key);
    if (!stats) {
@@ -169,6 +176,7 @@ export const stats = TryCatch(async (req, res, next) => {
          latestTransaction: modifyLatestTransaction,
       };
 
+      // Cache set
       setCache(key, stats);
    }
 
@@ -181,7 +189,7 @@ export const stats = TryCatch(async (req, res, next) => {
 // Pie - Charts
 export const pieCharts = TryCatch(async (req, res, next) => {
    let charts;
-   const key = "admin-pie-charts";
+   const key = keySet[1];
    charts = getCache(key);
 
    if (!charts) {
@@ -308,6 +316,7 @@ export const pieCharts = TryCatch(async (req, res, next) => {
          categoryCount,
       };
 
+      // Cache set
       setCache(key, charts);
    }
 
@@ -320,22 +329,20 @@ export const pieCharts = TryCatch(async (req, res, next) => {
 // Bar - Charts
 export const barCharts = TryCatch(async (req, res, next) => {
    let charts;
-   const key = "admin-bar-charts";
+   const key = keySet[2];
 
    charts = getCache(key);
 
    if (!charts) {
       const today = new Date();
+
       const sixMonthAgo = new Date(
          today.getFullYear(),
          today.getMonth() - 5,
          1
       );
-      const oneYearAgo = new Date(
-         today.getFullYear(),
-         today.getMonth() - 12,
-         1
-      );
+
+      const oneYearAgo = new Date(today.getFullYear() - 1, today.getMonth(), 1);
 
       const lastSixMonthUserPromise = User.find({
          createdAt: { $gte: sixMonthAgo },
@@ -356,13 +363,7 @@ export const barCharts = TryCatch(async (req, res, next) => {
             twelveMonthOrderPromise,
          ]);
 
-      // const productCount = pastMonthCounting({
-      //    length: 6,
-      //    docArr: sixMonthProduct,
-      //    today,
-      // });
-
-      let productCount = pastMonthCounting({
+      const productCount = pastMonthCounting({
          length: 6,
          docArr: sixMonthProduct,
          today,
@@ -386,6 +387,7 @@ export const barCharts = TryCatch(async (req, res, next) => {
          orders: orderCount,
       };
 
+      // Cache set
       setCache(key, charts);
    }
 
@@ -396,7 +398,68 @@ export const barCharts = TryCatch(async (req, res, next) => {
 });
 
 // Line - Charts
-export const lineCharts = TryCatch(async (req, res, next) => {});
+export const lineCharts = TryCatch(async (req, res, next) => {
+   let charts;
+   const key = keySet[3];
+
+   charts = getCache(key);
+
+   if (!charts) {
+      const today = new Date();
+      const oneYearAgo = new Date(today.getFullYear() - 1, today.getMonth(), 1);
+
+      const baseQuery = {
+         createdAt: { $gte: oneYearAgo },
+      };
+
+      const [lastYearUser, lastYearProduct, lastYearOrder] = await Promise.all([
+         User.find(baseQuery).select("createdAt"),
+         Product.find(baseQuery).select("createdAt"),
+         Order.find(baseQuery).select(["createdAt", "discount", "total"]),
+      ]);
+
+      const userCount = pastMonthCounting({
+         length: 12,
+         docArr: lastYearUser,
+         today,
+      });
+
+      const productCount = pastMonthCounting({
+         length: 12,
+         docArr: lastYearProduct,
+         today,
+      });
+
+      const discount = pastMonthCounting({
+         length: 12,
+         docArr: lastYearOrder,
+         today,
+         property: "discount",
+      });
+
+      const revenue = pastMonthCounting({
+         length: 12,
+         docArr: lastYearOrder,
+         today,
+         property: "total",
+      });
+
+      charts = {
+         user: userCount,
+         product: productCount,
+         discount,
+         revenue,
+      };
+
+      // Cache set
+      setCache(key, charts);
+   }
+
+   return res.status(200).json({
+      success: true,
+      charts,
+   });
+});
 
 /*
 Category wise product Count and return array
@@ -429,24 +492,40 @@ const categoryWiseProductCountRatio = async ({
 
 interface MyDocument extends Document {
    createdAt: Date;
+   discount?: number;
+   total?: number;
 }
 
 type PastMonthArrayType = {
    length: number;
    docArr: MyDocument[];
    today: Date;
+   property?: "discount" | "total";
 };
 
-const pastMonthCounting = ({ length, docArr, today }: PastMonthArrayType) => {
-   // Create Array for past month value store
+// Create Array for past month wise value store
+const pastMonthCounting = ({
+   length,
+   docArr,
+   today,
+   property,
+}: PastMonthArrayType) => {
    let data: number[] = new Array(length).fill(0);
 
    docArr.forEach((i) => {
       const createDate = i.createdAt;
       const monthDiff = (today.getMonth() - createDate.getMonth() + 12) % 12;
 
+      // if (monthDiff < length) {
+      //    data[length - monthDiff - 1] += property ? i[property]! : 1;
+      // }
+
       if (monthDiff < length) {
-         data[length - monthDiff - 1] += 1;
+         if (property) {
+            data[length - monthDiff - 1] += i[property]!;
+         } else {
+            data[length - monthDiff - 1] += 1;
+         }
       }
    });
    return data;

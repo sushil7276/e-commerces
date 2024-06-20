@@ -3,6 +3,7 @@ import { User } from "../models/user.model.js";
 import { NewUserRequestBody } from "../types/types.js";
 import { TryCatch } from "../middlewares/error.js";
 import ErrorHandler from "../utils/ErrorHandler.js";
+import { invalidateCache } from "../utils/features.js";
 
 // Create new User
 export const newUser = TryCatch(
@@ -31,6 +32,8 @@ export const newUser = TryCatch(
          gender,
          dob: new Date(dob), // Convert string to Date
       });
+
+      invalidateCache({ admin: true });
 
       return res.status(201).json({
          success: true,
@@ -75,6 +78,8 @@ export const deleteUser = TryCatch(async (req, res, next) => {
    }
 
    await user.deleteOne();
+
+   invalidateCache({ admin: true });
 
    res.status(200).json({
       success: true,
