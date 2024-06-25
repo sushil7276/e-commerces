@@ -1,6 +1,13 @@
-import { Suspense, lazy } from "react";
+import { Suspense, lazy, useEffect } from "react";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import Header from "./components/Header";
+import { Toaster } from "react-hot-toast";
+import { onAuthStateChanged } from "firebase/auth";
+import { auth } from "./firebase";
+import { useDispatch, useSelector } from "react-redux";
+import { userExist, userNotExist } from "./redux/reducer/userReducer";
+import { getUser } from "./redux/api/userAPI";
+import { userReducerInitialState } from "./types/reducer.types";
 
 // lazy loading concept
 const Loader = lazy(() => import("./components/Loader"));
@@ -13,32 +20,52 @@ const Orders = lazy(() => import("./pages/Orders"));
 const OrderDetails = lazy(() => import("./components/OrderDetails"));
 
 function App() {
-  return (
-    <BrowserRouter>
-      {/* Header */}
-      <Header />
+   const { loading, user } = useSelector(
+      (state: { userReducer: userReducerInitialState }) => state.userReducer
+   );
+   const dispatch = useDispatch();
 
-      <Suspense fallback={<Loader />}>
-        <Routes>
-          <Route path='/' element={<Home />} />
-          <Route path='/cart' element={<Cart />} />
-          <Route path='/search' element={<Search />} />
+   useEffect(() => {
+      // Authentication user on Google
+      onAuthStateChanged(auth, async (user) => {
+         if (user) {
+            const data = await getUser(user.uid);
+            dispatch(userExist(data.user));
+         } else {
+            dispatch(userNotExist());
+         }
+      });
+   });
 
-          {/* Not Logged In Route */}
-          <Route path='/login' element={<Login />} />
+   return loading ? (
+      <Loader />
+   ) : (
+      <BrowserRouter>
+         {/* Header */}
+         <Header user={user} />
 
-          {/* Logged In User Routes */}
-          <Route>
-            <Route path='/shipping' element={<Shipping />} />
-            <Route path='/orders' element={<Orders />} />
-            <Route path='/order/:id' element={<OrderDetails />} />
-          </Route>
+         <Suspense fallback={<Loader />}>
+            <Routes>
+               <Route path='/' element={<Home />} />
+               <Route path='/cart' element={<Cart />} />
+               <Route path='/search' element={<Search />} />
 
-          {/* Admin Routes */}
-        </Routes>
-      </Suspense>
-    </BrowserRouter>
-  );
+               {/* Not Logged In Route */}
+               <Route path='/login' element={<Login />} />
+
+               {/* Logged In User Routes */}
+               <Route>
+                  <Route path='/shipping' element={<Shipping />} />
+                  <Route path='/orders' element={<Orders />} />
+                  <Route path='/order/:id' element={<OrderDetails />} />
+               </Route>
+
+               {/* Admin Routes */}
+            </Routes>
+         </Suspense>
+         <Toaster position='bottom-center' />
+      </BrowserRouter>
+   );
 }
 
 export default App;

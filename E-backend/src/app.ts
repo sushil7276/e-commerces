@@ -5,6 +5,7 @@ import NodeCache from "node-cache";
 import morgan from "morgan";
 import { config } from "dotenv";
 import Stripe from "stripe";
+import cors from "cors";
 
 config({
    path: "./.env",
@@ -33,6 +34,21 @@ app.use(express.urlencoded({ extended: true }));
 // response status for development use.
 app.use(morgan("dev"));
 
+// CORS Policy
+//for all
+app.use(cors());
+
+// Particular site allow use this
+/*
+app.use(
+   cors({
+      origin: ["http://localhost:5173"],
+      credentials: true,
+      methods: ["GET", "POST", "DELETE", "PUT"],
+   })
+);
+*/
+
 app.get("/", (req, res) => {
    res.send("This is just message");
 });
@@ -43,6 +59,7 @@ import productRouter from "./routes/product.route.js";
 import oderRouter from "./routes/order.route.js";
 import paymentRouter from "./routes/payment.route.js";
 import dashboardRouter from "./routes/dashboard.route.js";
+import { METHODS } from "http";
 
 app.use("/v1/user", userRouter);
 app.use("/v1/product", productRouter);
