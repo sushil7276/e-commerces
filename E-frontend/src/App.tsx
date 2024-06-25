@@ -8,6 +8,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { userExist, userNotExist } from "./redux/reducer/userReducer";
 import { getUser } from "./redux/api/userAPI";
 import { userReducerInitialState } from "./types/reducer.types";
+import ProtectedRoute from "./components/ProtectedRoute";
 
 // lazy loading concept
 const Loader = lazy(() => import("./components/Loader"));
@@ -51,16 +52,36 @@ function App() {
                <Route path='/search' element={<Search />} />
 
                {/* Not Logged In Route */}
-               <Route path='/login' element={<Login />} />
+               <Route
+                  path='/login'
+                  element={
+                     <ProtectedRoute isAuthenticated={user ? false : true}>
+                        <Login />
+                     </ProtectedRoute>
+                  }
+               />
 
                {/* Logged In User Routes */}
-               <Route>
+               <Route
+                  element={
+                     <ProtectedRoute isAuthenticated={user ? true : false} />
+                  }
+               >
                   <Route path='/shipping' element={<Shipping />} />
                   <Route path='/orders' element={<Orders />} />
                   <Route path='/order/:id' element={<OrderDetails />} />
                </Route>
 
                {/* Admin Routes */}
+               <Route
+                  element={
+                     <ProtectedRoute
+                        isAuthenticated={user ? true : false}
+                        isAdmin={user?.role === "admin" ? true : false}
+                        adminRoute={true}
+                     />
+                  }
+               ></Route>
             </Routes>
          </Suspense>
          <Toaster position='bottom-center' />
