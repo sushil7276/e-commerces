@@ -6,7 +6,7 @@ import { onAuthStateChanged } from "firebase/auth";
 import { auth } from "./firebase";
 import { useDispatch, useSelector } from "react-redux";
 import { userExist, userNotExist } from "./redux/reducer/userReducer";
-import { getUser } from "./redux/api/userAPI";
+import { getUser } from "./redux/api/user.api";
 import { userReducerInitialState } from "./types/reducer.types";
 import ProtectedRoute from "./components/ProtectedRoute";
 
@@ -20,6 +20,13 @@ const Search = lazy(() => import("./pages/Search"));
 const Orders = lazy(() => import("./pages/Orders"));
 const OrderDetails = lazy(() => import("./components/OrderDetails"));
 
+// admin components
+const Transaction = lazy(() => import("./pages/admin/Transaction"));
+const Customer = lazy(() => import("./pages/admin/Customer"));
+const Product = lazy(() => import("./pages/admin/Product"));
+const AdminSidebar = lazy(() => import("./components/admin/AdminSidebar"));
+const Dashboard = lazy(() => import("./pages/admin/Dashboard"));
+
 function App() {
    const { loading, user } = useSelector(
       (state: { userReducer: userReducerInitialState }) => state.userReducer
@@ -28,15 +35,15 @@ function App() {
 
    useEffect(() => {
       // Authentication user on Google
-      onAuthStateChanged(auth, async (user) => {
-         if (user) {
-            const data = await getUser(user.uid);
+      onAuthStateChanged(auth, async (gUser) => {
+         if (gUser) {
+            const data = await getUser(gUser.uid);
             dispatch(userExist(data.user));
          } else {
             dispatch(userNotExist());
          }
       });
-   });
+   }, []);
 
    return loading ? (
       <Loader />
@@ -73,7 +80,13 @@ function App() {
                </Route>
 
                {/* Admin Routes */}
-               <Route
+               <Route path='/dashboard' element={<AdminSidebar />} />
+               <Route path='/admin/dashboard' element={<Dashboard />} />
+               <Route path='/admin/product' element={<Product />} />
+               <Route path='/admin/transaction' element={<Transaction />} />
+               <Route path='/admin/customer' element={<Customer />} />
+
+               {/* <Route
                   element={
                      <ProtectedRoute
                         isAuthenticated={user ? true : false}
@@ -81,7 +94,7 @@ function App() {
                         adminRoute={true}
                      />
                   }
-               ></Route>
+               ></Route> */}
             </Routes>
          </Suspense>
          <Toaster position='bottom-center' />

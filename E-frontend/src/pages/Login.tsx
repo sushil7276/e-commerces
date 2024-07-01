@@ -3,9 +3,9 @@ import { useState } from "react";
 import toast from "react-hot-toast";
 import { FcGoogle } from "react-icons/fc";
 import { auth } from "../firebase";
-import { useLoginMutation } from "../redux/api/userAPI";
+import { useLoginMutation } from "../redux/api/user.api";
 import { FetchBaseQueryError } from "@reduxjs/toolkit/query";
-import { MessageResponse } from "../types/app.types";
+import { MessageResponse } from "../types/api.types";
 
 export default function Login() {
    const [gender, setGender] = useState<string>("");

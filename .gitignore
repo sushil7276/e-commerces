@@ -32,3 +32,6 @@
 /E-frontend/*.njsproj
 /E-frontend/*.sln
 /E-frontend/*.sw?
+
+/node_modules
+/package-lock.json

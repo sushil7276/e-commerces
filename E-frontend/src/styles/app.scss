@@ -1,38 +1,38 @@
 :root {
-  font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
-  line-height: 1.5;
-  font-weight: 400;
+   font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
+   line-height: 1.5;
+   font-weight: 400;
 }
 
 * {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
+   margin: 0;
+   padding: 0;
+   box-sizing: border-box;
 }
 
 body {
-  // user do not copy text in app
-  user-select: none;
-  overflow: auto;
+   // user do not copy text in app
+   user-select: none;
+   overflow: auto;
 
-  &::-webkit-scrollbar {
-    display: none;
-  }
+   &::-webkit-scrollbar {
+      display: none;
+   }
 }
 
 a {
-  text-decoration: none;
-  color: black;
+   text-decoration: none;
+   color: black;
 }
 
 .red {
-  color: red;
+   color: red;
 }
 .purple {
-  color: rgb(47, 0, 255);
+   color: rgb(47, 0, 255);
 }
 .green {
-  color: rgb(0, 195, 0);
+   color: rgb(0, 195, 0);
 }
 
 $color1: white;
@@ -41,6 +41,7 @@ $color3: rgb(0, 104, 136);
 
 @import "./admin-styles/mixin";
 
+@import "./admin-styles/dashboard__sidebar";
 @import "./home";
 @import "./cart";
 @import "./shipping";
@@ -49,60 +50,70 @@ $color3: rgb(0, 104, 136);
 @import "./order";
 
 .container {
-  max-width: 1367px;
-  width: 100%;
-  margin: auto;
-  overflow: auto;
-  > h1 {
-    @include heading;
-    margin: 1rem 0;
-    text-align: left;
-  }
+   max-width: 1367px;
+   width: 100%;
+   margin: auto;
+   overflow: auto;
+   > h1 {
+      @include heading;
+      margin: 1rem 0;
+      text-align: left;
+   }
 }
 
 .header {
-  @include flex(row, flex-end, stretch, 1.2rem);
-  padding: 1rem;
-  a {
-    color: $color2;
-    letter-spacing: 2px;
-    font-size: 1.2rem;
-    text-transform: uppercase;
+   @include flex(row, flex-end, stretch, 1.2rem);
+   padding: 1rem;
+   a {
+      color: $color2;
+      letter-spacing: 2px;
+      font-size: 1.2rem;
+      text-transform: uppercase;
 
-    &:hover {
-      color: $color3;
-    }
-  }
+      &:hover {
+         color: $color3;
+      }
+   }
 
-  button {
-    border: none;
-    font-size: 1.2rem;
-    cursor: pointer;
-    background-color: transparent;
+   button {
+      border: none;
+      font-size: 1.2rem;
+      cursor: pointer;
+      background-color: transparent;
 
-    &:hover {
-      color: $color3;
-    }
-  }
+      &:hover {
+         color: $color3;
+      }
+   }
 
-  dialog {
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    padding: 1rem;
-    width: 110px;
-    position: absolute;
-    left: calc(100% - 120px);
-    top: 8%;
+   dialog {
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      padding: 1rem;
+      width: 110px;
+      position: absolute;
+      left: calc(100% - 120px);
+      top: 8%;
 
-    > div {
-      @include flex(column, flex-start, center, 0.5rem);
-    }
-  }
+      > div {
+         @include flex(column, flex-start, center, 0.5rem);
+      }
+   }
 }
 
 .heading {
-  @include heading;
-  text-align: center;
-  margin-top: 1rem 0;
-  text-transform: uppercase;
+   @include heading;
+   text-align: center;
+   margin-top: 1rem 0;
+   text-transform: uppercase;
+}
+
+.loader {
+   @include posCenter;
+}
+
+.adminContainer {
+   @include grid(1fr 4fr, 2rem);
+   background-color: rgb(247, 247, 247);
+   height: 100vh;
 }

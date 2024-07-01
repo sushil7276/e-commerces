@@ -26,6 +26,7 @@ app.get("/categories", getCategories);
 // Get All Filter Product With Pagination
 app.get("/all", getAllProduct);
 
+// Get All Product ---> Admin Only
 app.get("/admin/products", adminOnly, allProduct);
 // Product Details || Product Update || Product Delete
 app.route("/:id")

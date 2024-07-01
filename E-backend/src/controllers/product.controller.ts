@@ -27,7 +27,7 @@ export const createProduct = TryCatch(
          return next(new ErrorHandler("Please enter All Fields", 400));
       }
 
-      await Product.create({
+      const product = await Product.create({
          name,
          price,
          stock,
@@ -41,6 +41,7 @@ export const createProduct = TryCatch(
       return res.status(201).json({
          success: true,
          message: "Product Created Successfully",
+         product,
       });
    }
 );
@@ -223,8 +224,8 @@ export const getAllProduct = TryCatch(
 
       return res.status(200).json({
          success: true,
-         products,
          totalPage,
+         products,
       });
    }
 );
