@@ -10,6 +10,7 @@ import cors from "cors";
 config({
    path: "./.env",
 });
+
 const port = process.env.PORT || 4000;
 const mongoURl = process.env.MONGO_URL || "";
 const stipeKey = process.env.STRIPE_KEY || "";

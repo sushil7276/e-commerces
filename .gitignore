@@ -3,7 +3,7 @@
 # Backend
 /E-backend/dist
 /E-backend/node_modules
-/E-backend/package-lock.json
+/E-backend/packagelock.json
 /E-backend/.env
 
 
@@ -24,7 +24,7 @@
 
 # Editor directories and files
 /E-frontend/.vscode/*
-/E-frontend/!.vscode/extensions.json
+/E-frontend/!.vscode/E-xtensions.json
 /E-frontend/.idea
 /E-frontend/.DS_Store
 /E-frontend/*.suo
@@ -34,4 +34,4 @@
 /E-frontend/*.sw?
 
 /node_modules
-/package-lock.json
+/packagelock.json
