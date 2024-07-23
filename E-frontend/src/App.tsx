@@ -26,6 +26,21 @@ const Customer = lazy(() => import("./pages/admin/Customer"));
 const Product = lazy(() => import("./pages/admin/Product"));
 const AdminSidebar = lazy(() => import("./components/admin/AdminSidebar"));
 const Dashboard = lazy(() => import("./pages/admin/Dashboard"));
+const NewProduct = lazy(() => import("./pages/admin/Management/NewProduct"));
+const ProductManagement = lazy(
+   () => import("./pages/admin/Management/ProductManagement")
+);
+const TransactionManagement = lazy(
+   () => import("./pages/admin/Management/TransactionManagement")
+);
+const BarCharts = lazy(() => import("./pages/admin/charts/BarCharts"));
+const PieCharts = lazy(() => import("./pages/admin/charts/PieCharts"));
+const LineCharts = lazy(() => import("./pages/admin/charts/LineCharts"));
+
+// app Component
+const Stopwatch = lazy(() => import("./pages/admin/app/Stopwatch"));
+const Coupon = lazy(() => import("./pages/admin/app/Coupon"));
+const Toss = lazy(() => import("./pages/admin/app/Toss"));
 
 function App() {
    const { loading, user } = useSelector(
@@ -85,6 +100,22 @@ function App() {
                <Route path='/admin/product' element={<Product />} />
                <Route path='/admin/transaction' element={<Transaction />} />
                <Route path='/admin/customer' element={<Customer />} />
+               <Route path='/admin/product/new' element={<NewProduct />} />
+               <Route
+                  path='/admin/product/:id'
+                  element={<ProductManagement />}
+               />
+
+               <Route
+                  path='/admin/transaction/:id'
+                  element={<TransactionManagement />}
+               />
+               <Route path='/admin/chart/bar' element={<BarCharts />} />
+               <Route path='/admin/chart/pie' element={<PieCharts />} />
+               <Route path='/admin/chart/line' element={<LineCharts />} />
+               <Route path='/admin/app/stopwatch' element={<Stopwatch />} />
+               <Route path='/admin/app/coupon' element={<Coupon />} />
+               <Route path='/admin/app/toss' element={<Toss />} />
 
                {/* <Route
                   element={

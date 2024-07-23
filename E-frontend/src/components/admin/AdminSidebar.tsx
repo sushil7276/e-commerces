@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react";
 import { IconType } from "react-icons";
 import { AiFillFileText } from "react-icons/ai";
 import {
@@ -7,6 +8,7 @@ import {
    FaGamepad,
    FaStopwatch,
 } from "react-icons/fa";
+import { HiMenu } from "react-icons/hi";
 import { IoIosPeople } from "react-icons/io";
 import {
    RiCoupon3Fill,
@@ -19,18 +21,57 @@ import eCommerce from "../../assets/images/ecommerce.png";
 function AdminSidebar() {
    const location = useLocation();
 
+   const [showModal, setShowModal] = useState<boolean>(false);
+   const [phoneActive, setPhoneActive] = useState<boolean>(
+      window.innerWidth < 1100
+   );
+
+   const resizeHandler = () => {
+      setPhoneActive(window.innerWidth < 1100);
+   };
+
+   useEffect(() => {
+      window.addEventListener("resize", resizeHandler);
+
+      return () => {
+         window.addEventListener("resize", resizeHandler);
+      };
+   }, []);
+
    return (
       <>
-         <div className='dashboard__sidebar'>
-            <aside className='sidebar'>
-               <img src={eCommerce} alt='' />
-               <div>
-                  <DashboardDiv location={location} />
-                  <ChartsDiv location={location} />
-                  <AppsDiv location={location} />
-               </div>
-            </aside>
-         </div>
+         {phoneActive && (
+            <button id='hamburger' onClick={() => setShowModal(true)}>
+               <HiMenu />
+            </button>
+         )}
+
+         <aside
+            style={
+               phoneActive
+                  ? {
+                       width: "20rem",
+                       height: "100vh",
+                       position: "fixed",
+                       top: 0,
+                       left: showModal ? "0" : "-20rem",
+                       transition: "all 0.5s",
+                    }
+                  : {}
+            }
+         >
+            <img src={eCommerce} alt='' />
+
+            <DashboardDiv location={location} />
+            <ChartsDiv location={location} />
+            <AppsDiv location={location} />
+
+            {phoneActive && (
+               <button id='close-sidebar' onClick={() => setShowModal(false)}>
+                  Close
+               </button>
+            )}
+         </aside>
       </>
    );
 }
@@ -74,19 +115,19 @@ const ChartsDiv = ({ location }: { location: Location }) => (
       <h2>CHARTS</h2>
       <ul>
          <Li
-            url='/admin/bar'
+            url='/admin/chart/bar'
             text='Bar'
             Icon={FaChartBar}
             location={location}
          />
          <Li
-            url='/admin/pie'
+            url='/admin/chart/pie'
             text='Pie'
             Icon={FaChartPie}
             location={location}
          />
          <Li
-            url='/admin/line'
+            url='/admin/chart/line'
             text='Line'
             Icon={FaChartLine}
             location={location}

@@ -1,11 +1,191 @@
+import { ReactElement, useEffect, useState } from "react";
 import AdminSidebar from "../../components/admin/AdminSidebar";
+import { Column } from "react-table";
+import Loader from "../../components/Loader";
+import { Link } from "react-router-dom";
+import { FaPlus } from "react-icons/fa";
+import { CustomError } from "../../types/api.types";
+import toast from "react-hot-toast";
+import { useSelector } from "react-redux";
+import TableHOC from "../../components/admin/TableHOC";
 
-function product() {
-   return (
-      <div>
-         <AdminSidebar />
-      </div>
-   );
+import e_commerce from "../../assets/images/ecommerce.png";
+
+interface DataType {
+   photo: ReactElement;
+   name: string;
+   price: number;
+   stock: number;
+   action: ReactElement;
 }
 
-export default product;
+const columns: Column<DataType>[] = [
+   {
+      Header: "Photo",
+      accessor: "photo",
+   },
+   {
+      Header: "Name",
+      accessor: "name",
+   },
+   {
+      Header: "Price",
+      accessor: "price",
+   },
+   {
+      Header: "Stock",
+      accessor: "stock",
+   },
+   {
+      Header: "Action",
+      accessor: "action",
+   },
+];
+
+const arr: DataType[] = [
+   {
+      photo: <img src={e_commerce} alt='Shoes'></img>,
+      name: "Puma Shoes Air Jordan Cook Nigga 2023",
+      price: 690,
+      stock: 3,
+      action: <Link to='/admin/product/sajknaskd'>Manage</Link>,
+   },
+   {
+      photo: <img src={e_commerce} alt='Shoes'></img>,
+      name: "MacBook",
+      price: 232223,
+      stock: 213,
+      action: <Link to='/admin/product/sajknaskd'>Manage</Link>,
+   },
+   {
+      photo: <img src={e_commerce} alt='Shoes'></img>,
+      name: "Puma Shoes Air Jordan Cook Nigga 2023",
+      price: 690,
+      stock: 3,
+      action: <Link to='/admin/product/sajknaskd'>Manage</Link>,
+   },
+   {
+      photo: <img src={e_commerce} alt='Shoes'></img>,
+      name: "MacBook",
+      price: 232223,
+      stock: 213,
+      action: <Link to='/admin/product/sajknaskd'>Manage</Link>,
+   },
+   {
+      photo: <img src={e_commerce} alt='Shoes'></img>,
+      name: "Puma Shoes Air Jordan Cook Nigga 2023",
+      price: 690,
+      stock: 3,
+      action: <Link to='/admin/product/sajknaskd'>Manage</Link>,
+   },
+   {
+      photo: <img src={e_commerce} alt='Shoes'></img>,
+      name: "MacBook",
+      price: 232223,
+      stock: 213,
+      action: <Link to='/admin/product/sajknaskd'>Manage</Link>,
+   },
+   {
+      photo: <img src={e_commerce} alt='Shoes'></img>,
+      name: "Puma Shoes Air Jordan Cook Nigga 2023",
+      price: 690,
+      stock: 3,
+      action: <Link to='/admin/product/sajknaskd'>Manage</Link>,
+   },
+   {
+      photo: <img src={e_commerce} alt='Shoes'></img>,
+      name: "MacBook",
+      price: 232223,
+      stock: 213,
+      action: <Link to='/admin/product/sajknaskd'>Manage</Link>,
+   },
+   {
+      photo: <img src={e_commerce} alt='Shoes'></img>,
+      name: "Puma Shoes Air Jordan Cook Nigga 2023",
+      price: 690,
+      stock: 3,
+      action: <Link to='/admin/product/sajknaskd'>Manage</Link>,
+   },
+   {
+      photo: <img src={e_commerce} alt='Shoes'></img>,
+      name: "MacBook",
+      price: 232223,
+      stock: 213,
+      action: <Link to='/admin/product/sajknaskd'>Manage</Link>,
+   },
+   {
+      photo: <img src={e_commerce} alt='Shoes'></img>,
+      name: "Puma Shoes Air Jordan Cook Nigga 2023",
+      price: 690,
+      stock: 3,
+      action: <Link to='/admin/product/sajknaskd'>Manage</Link>,
+   },
+   {
+      photo: <img src={e_commerce} alt='Shoes'></img>,
+      name: "MacBook",
+      price: 232223,
+      stock: 213,
+      action: <Link to='/admin/product/sajknaskd'>Manage</Link>,
+   },
+];
+
+const Product = () => {
+   // const { user } = useSelector((state: RootState) => state.userReducer);
+
+   // const { isLoading, isError, error, data } = useAllProductsQuery(user?._id!);
+   const [data] = useState<DataType[]>(arr);
+   const [rows, setRows] = useState<DataType[]>([]);
+
+   // if (isError) {
+   //    const err = error as CustomError;
+   //    toast.error(err.data.message);
+   // }
+
+   // useEffect(() => {
+   //    if (data)
+   //       setRows(
+   //          data.products.map((i) => ({
+   //             photo: <img src={`${server}/${i.photo}`} />,
+   //             name: i.name,
+   //             price: i.price,
+   //             stock: i.stock,
+   //             action: <Link to={`/admin/product/${i._id}`}>Manage</Link>,
+   //          }))
+   //       );
+   // }, [data]);
+
+   useEffect(() => {
+      if (data)
+         setRows(
+            data.map((i, index) => ({
+               photo: i.photo,
+               name: i.name,
+               price: i.price,
+               stock: i.stock,
+               action: <Link to={`/admin/product/${index}`}>Manage</Link>,
+            }))
+         );
+   }, [data]);
+
+   const Table = TableHOC<DataType>(
+      columns,
+      rows,
+      "dashboard-product-box",
+      "Products",
+      rows.length > 6
+   )();
+
+   return (
+      <div className='admin-container'>
+         <AdminSidebar />
+         {/* <main>{isLoading ? <Skeleton length={20} /> : Table}</main> */}
+         <main>{Table}</main>
+
+         <Link to='/admin/product/new' className='create-product-btn'>
+            <FaPlus />
+         </Link>
+      </div>
+   );
+};
+
+export default Product;
