@@ -13,7 +13,7 @@ import { CustomError } from "../types/api.types";
 export default function Search() {
    const {
       data: categoriesResponse,
-      isLoading: loadingCategories,
+      isLoading: isLoadingCategories,
       isError,
       error,
    } = useCategoriesQuery("");
@@ -25,7 +25,7 @@ export default function Search() {
    const [page, setPage] = useState<number>(1);
 
    const {
-      isLoading,
+      isLoading: isProductLoading,
       data: productResponse,
       isError: productIsError,
       error: productError,
@@ -90,11 +90,11 @@ export default function Search() {
                   value={category}
                   onChange={(e) => setCategory(e.target.value)}
                >
-                  <option value=''>All</option>
-                  {!loadingCategories &&
+                  <option value=''>ALL</option>
+                  {!isLoadingCategories &&
                      categoriesResponse?.categories.map((category, index) => (
                         <option key={index} value={category}>
-                           {category}
+                           {category.toUpperCase()}
                         </option>
                      ))}
                </select>
@@ -109,7 +109,7 @@ export default function Search() {
                value={search}
                onChange={(e) => setSearch(e.target.value)}
             />
-            {isLoading ? (
+            {isProductLoading ? (
                <Loader />
             ) : (
                <div className='card'>

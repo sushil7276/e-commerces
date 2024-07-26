@@ -5,11 +5,21 @@ import ProductCard from "../components/ProductCard";
 import { useLatestProductQuery } from "../redux/api/product.api";
 import toast from "react-hot-toast";
 import Loader from "../components/Loader";
+import { CartItem } from "../types/types";
+import { useDispatch } from "react-redux";
+import { addFromCart } from "../redux/reducer/cartReducer";
 
 export default function Home() {
    const { data, isError, isLoading } = useLatestProductQuery("");
 
-   const addToCart = () => {};
+   const dispatch = useDispatch();
+
+   const addToCart = (cartItem: CartItem) => {
+      if (cartItem.stock < 1) return toast.error("Out Of Stock.");
+
+      dispatch(addFromCart(cartItem));
+      toast.success("Add To Cart");
+   };
 
    if (isError) toast.error("Product Fetching Problem.");
 

@@ -50,10 +50,9 @@ export const createProduct = TryCatch(
 export const updateProduct = TryCatch(async (req, res, next) => {
    const id = req.params.id;
    const { name, price, stock, category } = req.body;
-   console.log(req.body);
+
    const photo = req.file;
 
-   console.log(photo?.path);
    let product = await Product.findById(id);
 
    if (!product) return next(new ErrorHandler("Invalid Product ID", 400));
@@ -264,5 +263,6 @@ const deleteProducts = async (count: number) => {
    }
 
    console.log({ success: true });
-}; 
+};
+
 */

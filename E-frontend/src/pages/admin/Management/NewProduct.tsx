@@ -1,9 +1,15 @@
 import { ChangeEvent, FormEvent, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import AdminSidebar from "../../../components/admin/AdminSidebar";
+import { useSelector } from "react-redux";
+import { userReducerInitialState } from "../../../types/reducer.types";
+import { useNewProductMutation } from "../../../redux/api/product.api";
+import { responseToast } from "../../../utils/features";
 
 const NewProduct = () => {
-   //    const { user } = useSelector((state: RootState) => state.userReducer);
+   const { user } = useSelector(
+      (state: { userReducer: userReducerInitialState }) => state.userReducer
+   );
 
    const [name, setName] = useState<string>("");
    const [category, setCategory] = useState<string>("");
@@ -12,8 +18,9 @@ const NewProduct = () => {
    const [photoPrev, setPhotoPrev] = useState<string>("");
    const [photo, setPhoto] = useState<File>();
 
-   //    const [newProduct] = useNewProductMutation();
-   //    const navigate = useNavigate();
+   const [newProduct] = useNewProductMutation();
+
+   const navigate = useNavigate();
 
    const changeImageHandler = (e: ChangeEvent<HTMLInputElement>) => {
       const file: File | undefined = e.target.files?.[0];
@@ -44,9 +51,9 @@ const NewProduct = () => {
       formData.set("photo", photo);
       formData.set("category", category);
 
-      //   const res = await newProduct({ id: user?._id!, formData });
+      const res = await newProduct({ id: (user ?? {})._id!, formData });
 
-      //   responseToast(res, navigate, "/admin/product");
+      responseToast(res, navigate, "/admin/product");
    };
 
    return (

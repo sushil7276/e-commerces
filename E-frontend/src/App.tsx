@@ -58,6 +58,7 @@ function App() {
             dispatch(userNotExist());
          }
       });
+      // eslint-disable-next-line react-hooks/exhaustive-deps
    }, []);
 
    return loading ? (

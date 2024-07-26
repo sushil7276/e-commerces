@@ -1,18 +1,27 @@
-import { ChangeEvent, FormEvent, useState } from "react";
+import { ChangeEvent, FormEvent, useEffect, useState } from "react";
+import { FaTrash } from "react-icons/fa";
+import { useSelector } from "react-redux";
 import { Navigate, useNavigate, useParams } from "react-router-dom";
 import AdminSidebar from "../../../components/admin/AdminSidebar";
 import Loader from "../../../components/Loader";
-import { FaTrash } from "react-icons/fa";
+import {
+   useDeleteProductMutation,
+   useProductDetailsQuery,
+   useUpdateProductMutation,
+} from "../../../redux/api/product.api";
+import { server } from "../../../redux/store";
+import { userReducerInitialState } from "../../../types/reducer.types";
+import { responseToast } from "../../../utils/features";
 
 const ProductManagement = () => {
-   const isLoading = false;
-   const data = null;
-   //    const { user } = useSelector((state: RootState) => state.userReducer);
+   const { user } = useSelector(
+      (state: { userReducer: userReducerInitialState }) => state.userReducer
+   );
 
-   //    const params = useParams();
-   //    const navigate = useNavigate();
+   const params = useParams();
+   const navigate = useNavigate();
 
-   //    const { data, isLoading, isError } = useProductDetailsQuery(params.id!);
+   const { isError, isLoading, data } = useProductDetailsQuery(params.id!);
 
    const { price, photo, name, stock, category } = data?.product || {
       photo: "",
@@ -26,11 +35,20 @@ const ProductManagement = () => {
    const [stockUpdate, setStockUpdate] = useState<number>(stock);
    const [nameUpdate, setNameUpdate] = useState<string>(name);
    const [categoryUpdate, setCategoryUpdate] = useState<string>(category);
-   const [photoUpdate, setPhotoUpdate] = useState<string>("");
+   const [photoUpdate, setPhotoUpdate] = useState<string>(photo);
    const [photoFile, setPhotoFile] = useState<File>();
 
-   //    const [updateProduct] = useUpdateProductMutation();
-   //    const [deleteProduct] = useDeleteProductMutation();
+   useEffect(() => {
+      if (data) {
+         setNameUpdate(data.product.name);
+         setPriceUpdate(data.product.price);
+         setStockUpdate(data.product.stock);
+         setCategoryUpdate(data.product.category);
+      }
+   }, [data]);
+
+   const [updateProduct] = useUpdateProductMutation();
+   const [deleteProduct] = useDeleteProductMutation();
 
    const changeImageHandler = (e: ChangeEvent<HTMLInputElement>) => {
       const file: File | undefined = e.target.files?.[0];
@@ -60,33 +78,25 @@ const ProductManagement = () => {
       if (photoFile) formData.set("photo", photoFile);
       if (categoryUpdate) formData.set("category", categoryUpdate);
 
-      //   const res = await updateProduct({
-      //      formData,
-      //      userId: user?._id!,
-      //      productId: data?.product._id!,
-      //   });
+      const res = await updateProduct({
+         formData,
+         productId: (data?.product ?? {})._id!,
+         userId: (user ?? {})._id!,
+      });
 
-      //   responseToast(res, navigate, "/admin/product");
+      responseToast(res, navigate, "/admin/product");
    };
 
    const deleteHandler = async () => {
-      //  const res = await deleteProduct({
-      //     userId: user?._id!,
-      //     productId: data?.product._id!,
-      //  });
-      //  responseToast(res, navigate, "/admin/product");
+      const res = await deleteProduct({
+         productId: (data?.product ?? {})._id!,
+         userId: (user ?? {})._id!,
+      });
+
+      responseToast(res, navigate, "/admin/product");
    };
 
-   //    useEffect(() => {
-   //       if (data) {
-   //          setNameUpdate(data.product.name);
-   //          setPriceUpdate(data.product.price);
-   //          setStockUpdate(data.product.stock);
-   //          setCategoryUpdate(data.product.category);
-   //       }
-   //    }, [data]);
-
-   //    if (isError) return <Navigate to={"/404"} />;
+   if (isError) return <Navigate to={"/404"} />;
 
    return (
       <div className='admin-container'>
@@ -97,7 +107,7 @@ const ProductManagement = () => {
             ) : (
                <>
                   <section>
-                     {/* <strong>ID - {data?.product._id}</strong>
+                     <strong>ID - {data?.product._id}</strong>
                      <img src={`${server}/${photo}`} alt='Product' />
                      <p>{name}</p>
                      {stock > 0 ? (
@@ -105,7 +115,7 @@ const ProductManagement = () => {
                      ) : (
                         <span className='red'> Not Available</span>
                      )}
-                     <h3>₹{price}</h3> */}
+                     <h3>₹{price}</h3>
                   </section>
                   <article>
                      <button

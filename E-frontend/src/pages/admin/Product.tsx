@@ -1,15 +1,17 @@
 import { ReactElement, useEffect, useState } from "react";
-import AdminSidebar from "../../components/admin/AdminSidebar";
-import { Column } from "react-table";
-import Loader from "../../components/Loader";
-import { Link } from "react-router-dom";
-import { FaPlus } from "react-icons/fa";
-import { CustomError } from "../../types/api.types";
 import toast from "react-hot-toast";
+import { FaPlus } from "react-icons/fa";
 import { useSelector } from "react-redux";
+import { Link } from "react-router-dom";
+import { Column } from "react-table";
+import AdminSidebar from "../../components/admin/AdminSidebar";
 import TableHOC from "../../components/admin/TableHOC";
+import Loader from "../../components/Loader";
+import { CustomError } from "../../types/api.types";
 
-import e_commerce from "../../assets/images/ecommerce.png";
+import { useAllProductsQuery } from "../../redux/api/product.api";
+import { server } from "../../redux/store";
+import { userReducerInitialState } from "../../types/reducer.types";
 
 interface DataType {
    photo: ReactElement;
@@ -42,127 +44,33 @@ const columns: Column<DataType>[] = [
    },
 ];
 
-const arr: DataType[] = [
-   {
-      photo: <img src={e_commerce} alt='Shoes'></img>,
-      name: "Puma Shoes Air Jordan Cook Nigga 2023",
-      price: 690,
-      stock: 3,
-      action: <Link to='/admin/product/sajknaskd'>Manage</Link>,
-   },
-   {
-      photo: <img src={e_commerce} alt='Shoes'></img>,
-      name: "MacBook",
-      price: 232223,
-      stock: 213,
-      action: <Link to='/admin/product/sajknaskd'>Manage</Link>,
-   },
-   {
-      photo: <img src={e_commerce} alt='Shoes'></img>,
-      name: "Puma Shoes Air Jordan Cook Nigga 2023",
-      price: 690,
-      stock: 3,
-      action: <Link to='/admin/product/sajknaskd'>Manage</Link>,
-   },
-   {
-      photo: <img src={e_commerce} alt='Shoes'></img>,
-      name: "MacBook",
-      price: 232223,
-      stock: 213,
-      action: <Link to='/admin/product/sajknaskd'>Manage</Link>,
-   },
-   {
-      photo: <img src={e_commerce} alt='Shoes'></img>,
-      name: "Puma Shoes Air Jordan Cook Nigga 2023",
-      price: 690,
-      stock: 3,
-      action: <Link to='/admin/product/sajknaskd'>Manage</Link>,
-   },
-   {
-      photo: <img src={e_commerce} alt='Shoes'></img>,
-      name: "MacBook",
-      price: 232223,
-      stock: 213,
-      action: <Link to='/admin/product/sajknaskd'>Manage</Link>,
-   },
-   {
-      photo: <img src={e_commerce} alt='Shoes'></img>,
-      name: "Puma Shoes Air Jordan Cook Nigga 2023",
-      price: 690,
-      stock: 3,
-      action: <Link to='/admin/product/sajknaskd'>Manage</Link>,
-   },
-   {
-      photo: <img src={e_commerce} alt='Shoes'></img>,
-      name: "MacBook",
-      price: 232223,
-      stock: 213,
-      action: <Link to='/admin/product/sajknaskd'>Manage</Link>,
-   },
-   {
-      photo: <img src={e_commerce} alt='Shoes'></img>,
-      name: "Puma Shoes Air Jordan Cook Nigga 2023",
-      price: 690,
-      stock: 3,
-      action: <Link to='/admin/product/sajknaskd'>Manage</Link>,
-   },
-   {
-      photo: <img src={e_commerce} alt='Shoes'></img>,
-      name: "MacBook",
-      price: 232223,
-      stock: 213,
-      action: <Link to='/admin/product/sajknaskd'>Manage</Link>,
-   },
-   {
-      photo: <img src={e_commerce} alt='Shoes'></img>,
-      name: "Puma Shoes Air Jordan Cook Nigga 2023",
-      price: 690,
-      stock: 3,
-      action: <Link to='/admin/product/sajknaskd'>Manage</Link>,
-   },
-   {
-      photo: <img src={e_commerce} alt='Shoes'></img>,
-      name: "MacBook",
-      price: 232223,
-      stock: 213,
-      action: <Link to='/admin/product/sajknaskd'>Manage</Link>,
-   },
-];
-
 const Product = () => {
-   // const { user } = useSelector((state: RootState) => state.userReducer);
+   const { user } = useSelector(
+      (state: { userReducer: userReducerInitialState }) => state.userReducer
+   );
 
-   // const { isLoading, isError, error, data } = useAllProductsQuery(user?._id!);
-   const [data] = useState<DataType[]>(arr);
+   console.log(user?._id);
+
+   const { isError, isLoading, error, data } = useAllProductsQuery(
+      (user ?? {})._id!
+   );
+
    const [rows, setRows] = useState<DataType[]>([]);
 
-   // if (isError) {
-   //    const err = error as CustomError;
-   //    toast.error(err.data.message);
-   // }
-
-   // useEffect(() => {
-   //    if (data)
-   //       setRows(
-   //          data.products.map((i) => ({
-   //             photo: <img src={`${server}/${i.photo}`} />,
-   //             name: i.name,
-   //             price: i.price,
-   //             stock: i.stock,
-   //             action: <Link to={`/admin/product/${i._id}`}>Manage</Link>,
-   //          }))
-   //       );
-   // }, [data]);
+   if (isError) {
+      const err = error as CustomError;
+      toast.error(err.data.message);
+   }
 
    useEffect(() => {
       if (data)
          setRows(
-            data.map((i, index) => ({
-               photo: i.photo,
+            data.products.map((i) => ({
+               photo: <img src={`${server}/${i.photo}`} />,
                name: i.name,
                price: i.price,
                stock: i.stock,
-               action: <Link to={`/admin/product/${index}`}>Manage</Link>,
+               action: <Link to={`/admin/product/${i._id}`}>Manage</Link>,
             }))
          );
    }, [data]);
@@ -178,8 +86,7 @@ const Product = () => {
    return (
       <div className='admin-container'>
          <AdminSidebar />
-         {/* <main>{isLoading ? <Skeleton length={20} /> : Table}</main> */}
-         <main>{Table}</main>
+         <main>{isLoading ? <Loader /> : Table}</main>
 
          <Link to='/admin/product/new' className='create-product-btn'>
             <FaPlus />
