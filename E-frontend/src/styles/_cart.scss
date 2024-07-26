@@ -1,137 +1,155 @@
 .cart {
-  padding: 2rem 4rem;
-  height: calc(100vh - 4rem);
-  width: 100%;
-  display: grid;
-  grid-template-columns: 5fr 2fr;
+   padding: 2rem 4rem;
+   height: calc(100vh - 4rem);
+   width: 100%;
+   display: grid;
+   grid-template-columns: 5fr 2fr;
 
-  // Left Side section
-  > main {
-    padding: 1.2rem;
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
-    overflow: auto;
-
-    // Scroll Bar Hide
-    &::-webkit-scrollbar {
-      display: none;
-    }
-    > h1 {
-      @include heading(2px);
-      text-align: center;
-    }
-
-    > div {
+   // Left Side section
+   > main {
+      padding: 1.2rem;
       display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-  }
+      flex-direction: column;
+      gap: 1rem;
+      overflow: auto;
 
-  .product {
-    padding: 1rem;
-    @include flex(row, flex-start, center, 2rem);
+      // Scroll Bar Hide
+      &::-webkit-scrollbar {
+         display: none;
+      }
+      > h1 {
+         @include heading(2px);
+         text-align: center;
+      }
 
-    img {
-      @include square(7rem);
-      object-fit: contain;
-      padding: 4px;
-    }
-    > article {
-      @include flex(column, center, flex-start, 0.25rem);
+      > div {
+         display: flex;
+         justify-content: space-between;
+         align-items: center;
+      }
+   }
+
+   .product {
+      padding: 1rem;
+      @include flex(row, flex-start, center, 2rem);
+
+      img {
+         @include square(7rem);
+         object-fit: contain;
+         padding: 4px;
+      }
+      > article {
+         @include flex(column, center, flex-start, 0.25rem);
+
+         > a {
+            font-size: 1.2rem;
+            color: $color2;
+
+            &:hover {
+               color: $color3;
+            }
+         }
+         > span {
+            font-weight: 700;
+         }
+      }
+   }
+
+   .action-button {
+      @include flex;
+
+      > button {
+         border: none;
+         @include square(2rem);
+         cursor: pointer;
+         border-radius: 5px;
+         @include flex;
+         font-size: 1.2rem;
+
+         &:hover {
+            background-color: $color2;
+            color: $color1;
+         }
+      }
+
+      .delete-button {
+         background-color: transparent;
+         font-size: 1.2rem;
+
+         &:hover {
+            color: red;
+            background-color: transparent;
+         }
+      }
+   }
+   // Left Side section End
+
+   // Right Side Section
+   aside {
+      padding: 1rem;
+      margin-right: 5rem;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: 1rem;
+
+      > div {
+         display: flex;
+         justify-content: space-between;
+         gap: 5px;
+
+         input {
+            @include inputStyle;
+            border: 1px solid rgba(31, 31, 31, 0.351);
+            font-size: 1.05rem;
+            border-radius: 5px;
+            margin-top: 2rem;
+         }
+
+         #coupon-code {
+            width: 30%;
+            @include btn(0.5rem, #007bff, $color1);
+            border-radius: 5px;
+            text-transform: uppercase;
+            transition: all 0.3s;
+            margin-top: 2rem;
+
+            &:hover {
+               opacity: 0.8;
+            }
+         }
+      }
+
+      > p {
+         font-size: 1.1rem;
+      }
+
+      > span {
+         font-size: 10px;
+         margin-top: -0.8rem;
+
+         // > code {
+         //    font-weight: 900;
+         //    align-self: flex-end;
+         // }
+      }
 
       > a {
-        font-size: 1.2rem;
-        color: $color2;
+         width: 100%;
+         button {
+            width: 100%;
+            @include btn(1rem, $color3, $color1);
+            border-radius: 5px;
+            font-size: 1.05rem;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            transition: all 0.3s;
 
-        &:hover {
-          color: $color3;
-        }
+            &:hover {
+               opacity: 0.8;
+            }
+         }
       }
-      > span {
-        font-weight: 700;
-      }
-    }
-  }
-
-  .action-button {
-    @include flex;
-
-    > button {
-      border: none;
-      @include square(2rem);
-      cursor: pointer;
-      border-radius: 5px;
-      @include flex;
-      font-size: 1.2rem;
-
-      &:hover {
-        background-color: $color2;
-        color: $color1;
-      }
-    }
-
-    .delete-button {
-      background-color: transparent;
-      font-size: 1.2rem;
-
-      &:hover {
-        color: red;
-        background-color: transparent;
-      }
-    }
-  }
-  // Left Side section End
-
-  // Right Side Section
-  aside {
-    padding: 1rem;
-    margin-right: 5rem;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    gap: 1rem;
-
-    input {
-      @include inputStyle;
-      border: 1px solid rgba(31, 31, 31, 0.351);
-      font-size: 1.05rem;
-      border-radius: 5px;
-      margin-top: 2rem;
-    }
-
-    > p {
-      font-size: 1.1rem;
-    }
-
-    > span {
-      font-size: 10px;
-      margin-top: -0.8rem;
-      @include flex(row, center, center, 5px);
-
-      > code {
-        font-weight: 900;
-        align-self: flex-end;
-      }
-    }
-
-    > a {
-      width: 100%;
-      button {
-        width: 100%;
-        @include btn(1rem, $color3, $color1);
-        border-radius: 5px;
-        font-size: 1.05rem;
-        letter-spacing: 2px;
-        text-transform: uppercase;
-        transition: all 0.3s;
-
-        &:hover{
-            opacity: 0.8;
-        }
-      }
-    }
-  }
-  // Right Side Section End
+   }
+   // Right Side Section End
 }

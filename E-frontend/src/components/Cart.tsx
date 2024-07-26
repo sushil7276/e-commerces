@@ -57,6 +57,29 @@ export default function Cart() {
       dispatch(calculatePrice());
    }, [dispatch, cartItems, discount]);
 
+   const couponCheck = async () => {
+      axios
+         .get(`${server}/v1/payment/verify-coupon?couponCode=${couponCode}`, {})
+         .then((res) => {
+            setIsValidCouponCode(true);
+            dispatch(discountApply(res.data.amount));
+
+            toast.success(res.data.message);
+         })
+         .catch((e) => {
+            setIsValidCouponCode(false);
+            dispatch(discountApply(0));
+            toast.error(e.response.data.message);
+         });
+   };
+
+   useEffect(() => {
+      setIsValidCouponCode(false);
+      dispatch(discountApply(0));
+   }, [couponCode, dispatch]);
+
+   /* This Code is direct effect of input field changes
+
    useEffect(() => {
       const { token, cancel } = axios.CancelToken.source(); // Request cancelation
 
@@ -84,6 +107,7 @@ export default function Cart() {
          setIsValidCouponCode(false);
       };
    }, [couponCode, dispatch]);
+*/
 
    return (
       <div className='cart'>
@@ -116,12 +140,19 @@ export default function Cart() {
             <p>
                <b>Total: &#x20b9;{total}</b>
             </p>
-            <input
-               type='text'
-               value={couponCode}
-               placeholder='Coupon Code...'
-               onChange={(e) => setCouponCode(e.target.value)}
-            />
+
+            <div>
+               <input
+                  type='text'
+                  value={couponCode}
+                  placeholder='Coupon Code...'
+                  onChange={(e) => setCouponCode(e.target.value)}
+               />
+               <button id='coupon-code' onClick={couponCheck}>
+                  Apply
+               </button>
+            </div>
+
             {couponCode &&
                (isValidCouponCode ? (
                   <span className='green'>&#x20b9;{discount} off</span>
