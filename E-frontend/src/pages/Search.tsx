@@ -9,6 +9,9 @@ import {
    useSearchProductQuery,
 } from "../redux/api/product.api";
 import { CustomError } from "../types/api.types";
+import { CartItem } from "../types/types";
+import { useDispatch } from "react-redux";
+import { addFromCart } from "../redux/reducer/cartReducer";
 
 export default function Search() {
    const {
@@ -24,6 +27,8 @@ export default function Search() {
    const [category, setCategory] = useState<string>("");
    const [page, setPage] = useState<number>(1);
 
+   const dispatch = useDispatch();
+
    const {
       isLoading: isProductLoading,
       data: productResponse,
@@ -37,7 +42,12 @@ export default function Search() {
       sort,
    });
 
-   const addToCart = () => {};
+   const addToCart = (cartItem: CartItem) => {
+      if (cartItem.stock < 1) return toast.error("Out Of Stock.");
+
+      dispatch(addFromCart(cartItem));
+      toast.success("Add To Cart");
+   };
 
    const isPrevPage = 1 < page;
 

@@ -1,16 +1,19 @@
 import { useEffect, useState } from "react";
+import toast from "react-hot-toast";
 import { VscError } from "react-icons/vsc";
 import { useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
-import { CartReducerInitialState } from "../types/reducer.types";
-import CartItemCard from "./CartItems";
 import {
    addFromCart,
    calculatePrice,
+   discountApply,
    removeCartItem,
 } from "../redux/reducer/cartReducer";
+import { CartReducerInitialState } from "../types/reducer.types";
 import { CartItem } from "../types/types";
-import toast from "react-hot-toast";
+import CartItemCard from "./CartItems";
+import axios from "axios";
+import { server } from "../redux/store";
 
 export default function Cart() {
    const { cartItems, discount, shippingCharges, subtotal, tax, total } =
@@ -52,19 +55,35 @@ export default function Cart() {
 
    useEffect(() => {
       dispatch(calculatePrice());
-   }, [dispatch, cartItems]);
+   }, [dispatch, cartItems, discount]);
 
    useEffect(() => {
+      const { token, cancel } = axios.CancelToken.source(); // Request cancelation
+
       const timeOutId = setTimeout(() => {
-         if (Math.random() > 0.5) setIsValidCouponCode(true);
-         else setIsValidCouponCode(false);
+         axios
+            .get(
+               `${server}/v1/payment/verify-coupon?couponCode=${couponCode}`,
+               { cancelToken: token }
+            )
+            .then((res) => {
+               setIsValidCouponCode(true);
+               dispatch(discountApply(res.data.amount));
+
+               toast.success(res.data.message);
+            })
+            .catch(() => {
+               setIsValidCouponCode(false);
+               dispatch(discountApply(0));
+            });
       }, 1000);
 
       return () => {
          clearTimeout(timeOutId);
+         cancel();
          setIsValidCouponCode(false);
       };
-   }, [couponCode]);
+   }, [couponCode, dispatch]);
 
    return (
       <div className='cart'>
@@ -105,9 +124,7 @@ export default function Cart() {
             />
             {couponCode &&
                (isValidCouponCode ? (
-                  <span className='green'>
-                     &#x20b9;{discount} off using the <code>{couponCode}</code>
-                  </span>
+                  <span className='green'>&#x20b9;{discount} off</span>
                ) : (
                   <span className='red'>
                      Invalid Coupon <VscError />
