@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
 
-const orderSchema = new mongoose.Schema(
+const schema = new mongoose.Schema(
    {
       shippingInfo: {
          address: {
@@ -24,9 +24,10 @@ const orderSchema = new mongoose.Schema(
             required: true,
          },
       },
+
       user: {
          type: String,
-         ref: "User", // Collection Reference
+         ref: "User",
          required: true,
       },
 
@@ -40,11 +41,11 @@ const orderSchema = new mongoose.Schema(
       },
       shippingCharges: {
          type: Number,
-         default: 0,
+         required: true,
       },
       discount: {
          type: Number,
-         default: 0,
+         required: true,
       },
       total: {
          type: Number,
@@ -56,7 +57,7 @@ const orderSchema = new mongoose.Schema(
          default: "Processing",
       },
 
-      orderItem: [
+      orderItems: [
          {
             name: String,
             photo: String,
@@ -74,4 +75,4 @@ const orderSchema = new mongoose.Schema(
    }
 );
 
-export const Order = mongoose.model("Order", orderSchema);
+export const Order = mongoose.model("Order", schema);

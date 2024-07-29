@@ -78,5 +78,5 @@ export interface NewOrderRequest {
    discount: number;
    shippingCharges: number;
    total: number;
-   orderItem: OrderItem[];
+   orderItems: OrderItem[];
 }

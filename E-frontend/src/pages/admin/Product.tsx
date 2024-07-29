@@ -49,8 +49,6 @@ const Product = () => {
       (state: { userReducer: userReducerInitialState }) => state.userReducer
    );
 
-   console.log(user?._id);
-
    const { isError, isLoading, error, data } = useAllProductsQuery(
       (user ?? {})._id!
    );

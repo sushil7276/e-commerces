@@ -139,7 +139,7 @@ export const stats = TryCatch(async (req, res, next) => {
          id: i._id,
          discount: i.discount,
          amount: i.total,
-         quantity: i.orderItem.length,
+         quantity: i.orderItems.length,
          stats: i.status,
       }));
 

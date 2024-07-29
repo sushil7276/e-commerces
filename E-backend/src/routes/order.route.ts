@@ -16,7 +16,7 @@ app.post("/new", newOrder);
 app.get("/my", myOrders);
 
 // Admin route
-app.get("/all", adminOnly, getAllOrders);
+app.get("/admin/all", adminOnly, getAllOrders);
 
 app.route("/:id")
    .get(getOrderDetails)

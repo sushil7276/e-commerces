@@ -34,6 +34,7 @@ export type CartItem = {
    stock: number;
 };
 
+// all properties of "CartItem" except "stock". and add "_id" property
 export type OrderItem = Omit<CartItem, "stock"> & { _id: string };
 
 export type Order = {

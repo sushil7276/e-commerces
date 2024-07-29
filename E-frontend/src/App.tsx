@@ -11,6 +11,7 @@ import { userReducerInitialState } from "./types/reducer.types";
 import ProtectedRoute from "./components/ProtectedRoute";
 
 // lazy loading concept
+const NotFound = lazy(() => import("./pages/NotFound"));
 const Loader = lazy(() => import("./components/Loader"));
 const Cart = lazy(() => import("./components/Cart"));
 const Home = lazy(() => import("./pages/Home"));
@@ -127,6 +128,8 @@ function App() {
                      />
                   }
                ></Route> */}
+
+               <Route path='/404' element={<NotFound />} />
             </Routes>
          </Suspense>
          <Toaster position='bottom-center' />

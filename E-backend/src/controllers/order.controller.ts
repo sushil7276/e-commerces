@@ -15,7 +15,7 @@ export const newOrder = TryCatch(
    async (req: Request<{}, {}, NewOrderRequest>, res, next) => {
       const {
          shippingInfo,
-         orderItem,
+         orderItems,
          user,
          subtotal,
          discount,
@@ -24,11 +24,11 @@ export const newOrder = TryCatch(
          shippingCharges,
       } = req.body;
 
-      if (!shippingInfo || !orderItem || !user || !subtotal || !tax || !total)
+      if (!shippingInfo || !orderItems || !user || !subtotal || !tax || !total)
          return next(new ErrorHandler("Please Enter All Field ", 400));
       await Order.create({
          shippingInfo,
-         orderItem,
+         orderItems,
          user,
          subtotal,
          discount,
@@ -37,14 +37,14 @@ export const newOrder = TryCatch(
          total,
       });
 
-      await reduceStock(orderItem);
+      await reduceStock(orderItems);
 
       invalidateCache({
          product: true,
          order: true,
          admin: true,
          userId: user,
-         productId: orderItem.map((i) => String(i.productId)),
+         productId: orderItems.map((i) => String(i.productId)),
       });
 
       return res.status(200).json({
@@ -120,7 +120,7 @@ export const getAllOrders = TryCatch(async (req, res, next) => {
 
    orders = getCache(key);
    if (!orders) {
-      orders = await Order.find();
+      orders = await Order.find().populate("user", "name");
       setCache(key, orders);
    }
 
@@ -141,11 +141,10 @@ export const getOrderDetails = TryCatch(async (req, res, next) => {
    let order;
    order = getCache(key);
    if (!order) {
-      order = await Order.findById(id);
+      order = await Order.findById(id).populate("user", "name");
       if (!order) return next(new ErrorHandler("Order Not Found", 400));
       setCache(key, order);
    }
-
    return res.status(200).json({
       success: true,
       order,

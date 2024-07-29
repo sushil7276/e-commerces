@@ -1,10 +1,17 @@
-import { RootState } from "@reduxjs/toolkit/query";
+import { FaTrash } from "react-icons/fa";
 import { useSelector } from "react-redux";
-import { Link, useNavigate, useParams } from "react-router-dom";
+import { Link, Navigate, useNavigate, useParams } from "react-router-dom";
 import AdminSidebar from "../../../components/admin/AdminSidebar";
 import Loader from "../../../components/Loader";
-import { FaTrash } from "react-icons/fa";
+import {
+   useDeleteOrderMutation,
+   useDetailsOrderQuery,
+   useUpdateOrderMutation,
+} from "../../../redux/api/order.api";
+import { server } from "../../../redux/store";
+import { userReducerInitialState } from "../../../types/reducer.types";
 import { Order, OrderItem } from "../../../types/types";
+import { responseToast } from "../../../utils/features";
 
 const defaultData: Order = {
    shippingInfo: {
@@ -26,14 +33,14 @@ const defaultData: Order = {
 };
 
 const TransactionManagement = () => {
-   const data = null;
-   const isLoading = false;
-   //    const { user } = useSelector((state: RootState) => state.userReducer);
+   const { user } = useSelector(
+      (state: { userReducer: userReducerInitialState }) => state.userReducer
+   );
 
-   //    const params = useParams();
-   //    const navigate = useNavigate();
+   const params = useParams();
+   const navigate = useNavigate();
 
-   //    const { isLoading, data, isError } = useOrderDetailsQuery(params.id!);
+   const { isError, isLoading, data } = useDetailsOrderQuery(params.id!);
 
    const {
       shippingInfo: { address, city, state, country, pinCode },
@@ -47,26 +54,28 @@ const TransactionManagement = () => {
       shippingCharges,
    } = data?.order || defaultData;
 
-   //    const [updateOrder] = useUpdateOrderMutation();
-   //    const [deleteOrder] = useDeleteOrderMutation();
+   const [updateOrder] = useUpdateOrderMutation();
+   const [deleteOrder] = useDeleteOrderMutation();
 
    const updateHandler = async () => {
-      //  const res = await updateOrder({
-      //     userId: user?._id!,
-      //     orderId: data?.order._id!,
-      //  });
-      //  responseToast(res, navigate, "/admin/transaction");
+      const res = await updateOrder({
+         orderId: params.id!,
+         userId: (user ?? {})._id!,
+      });
+
+      responseToast(res, navigate, "/admin/transaction");
    };
 
    const deleteHandler = async () => {
-      //  const res = await deleteOrder({
-      //     userId: user?._id!,
-      //     orderId: data?.order._id!,
-      //  });
-      //  responseToast(res, navigate, "/admin/transaction");
+      const res = await deleteOrder({
+         orderId: params.id!,
+         userId: (user ?? {})._id!,
+      });
+
+      responseToast(res, navigate, "/admin/transaction");
    };
 
-   //    if (isError) return <Navigate to={"/404"} />;
+   if (isError) return <Navigate to={"/404"} />;
 
    return (
       <div className='admin-container'>
@@ -83,17 +92,17 @@ const TransactionManagement = () => {
                   >
                      <h2>Order Items</h2>
 
-                     {/* {orderItems.map((i) => (
+                     {orderItems.map((i) => (
                         <ProductCard
-                           key={i._id}
+                           _id={i._id}
                            name={i.name}
                            photo={`${server}/${i.photo}`}
-                           productId={i.productId}
-                           _id={i._id}
-                           quantity={i.quantity}
                            price={i.price}
+                           productId={i.productId}
+                           quantity={i.quantity}
+                           key={i._id}
                         />
-                     ))} */}
+                     ))}
                   </section>
 
                   <article className='shipping-info-card'>
