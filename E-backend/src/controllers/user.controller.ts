@@ -77,12 +77,17 @@ export const deleteUser = TryCatch(async (req, res, next) => {
       return next(new ErrorHandler("Invalid User", 400));
    }
 
-   await user.deleteOne();
-
-   invalidateCache({ admin: true });
-
    res.status(200).json({
       success: true,
-      message: "Deleted user Successfully",
+      message: "Temporary Delete Functionality Stop.",
    });
+
+   // await user.deleteOne();
+
+   // invalidateCache({ admin: true });
+
+   // res.status(200).json({
+   //    success: true,
+   //    message: "Deleted user Successfully",
+   // });
 });
