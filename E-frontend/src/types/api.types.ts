@@ -75,7 +75,7 @@ export type SearchProductRequest = {
 export type NewOrderRequest = {
    orderItems: CartItem[];
    shippingInfo: ShippingInfo;
-   subtotal: string;
+   subtotal: number;
    tax: number;
    shippingCharges: number;
    discount: number;

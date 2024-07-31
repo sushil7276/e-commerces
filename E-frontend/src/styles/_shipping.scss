@@ -1,62 +1,59 @@
 .shipping {
-  @include flex;
+   @include flex;
 
-  > button {
-    position: fixed;
-    top: 3rem;
-    left: 3rem;
-    @include square(2rem);
-    border: none;
-    cursor: pointer;
-    border-radius: 5px;
-    @include baseShadow;
-    background-color: $color2;
-    color: $color1;
-
-    svg {
-      transition: all 0.3s;
-    }
-
-    &:hover svg {
-      translate: -0.25rem;
-    }
-  }
-
-  > form {
-    max-width: 45%;
-    width: 100%;
-    padding: 2rem;
-    @include flex(column, center, stretch, 1.5rem);
-
-    > h1 {
-      @include heading(2px);
-      text-align: center;
-      margin: 1rem;
-    }
-
-    > input,
-    > select {
-      @include inputStyle;
-      border: 1px solid rgba(31, 31, 31, 0.351);
-      font-size: 1.05rem;
+   > button {
+      position: fixed;
+      top: 3rem;
+      left: 3rem;
+      @include square(2rem);
+      border: none;
+      cursor: pointer;
       border-radius: 5px;
-    }
+      @include baseShadow;
+      background-color: $color2;
+      color: $color1;
 
-    > a {
-      width: 100%;
-      button {
-        width: 100%;
-        @include btn(1rem, $color3, $color1);
-        border-radius: 5px;
-        font-size: 1.05rem;
-        letter-spacing: 2px;
-        text-transform: uppercase;
-        transition: all 0.3s;
-
-        &:hover{
-            opacity: 0.8;
-        }
+      svg {
+         transition: all 0.3s;
       }
-    }
-  }
+
+      &:hover svg {
+         translate: -0.25rem;
+      }
+   }
+
+   > form {
+      max-width: 45%;
+      width: 100%;
+      padding: 2rem;
+      @include flex(column, center, stretch, 1.5rem);
+
+      > h1 {
+         @include heading(2px);
+         text-align: center;
+         margin: 1rem;
+      }
+
+      > input,
+      > select {
+         @include inputStyle;
+         border: 1px solid rgba(31, 31, 31, 0.351);
+         font-size: 1.05rem;
+         border-radius: 5px;
+      }
+
+      button {
+         width: 100%;
+         @include btn(1rem, $color3, $color1);
+         border-radius: 5px;
+         font-size: 1.05rem;
+         letter-spacing: 2px;
+         text-transform: uppercase;
+         transition: all 0.3s;
+
+         &:hover {
+            opacity: 0.8;
+         }
+      }
+   }
 }

@@ -1,16 +1,20 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { CartReducerInitialState } from "../../types/reducer.types";
-import { CartItem } from "../../types/types";
+import { CartItem, ShippingInfo } from "../../types/types";
 
 const initialState: CartReducerInitialState = {
    loading: false,
-   cartItems: [],
+   cartItems: localStorage.getItem("cartItems")
+      ? JSON.parse(localStorage.getItem("cartItems")!)
+      : [],
    subtotal: 0,
    discount: 0,
    tax: 0,
    shippingCharges: 0,
    total: 0,
-   shippingInfo: { address: "", city: "", state: "", country: "", pinCode: "" },
+   shippingInfo: localStorage.getItem("shippingInfo")
+      ? JSON.parse(localStorage.getItem("shippingInfo")!)
+      : { address: "", city: "", state: "", country: "", pinCode: "" },
 };
 
 export const cartReducer = createSlice({
@@ -28,6 +32,8 @@ export const cartReducer = createSlice({
          else state.cartItems.push(action.payload);
 
          state.loading = false;
+
+         localStorage.setItem("cartItems", JSON.stringify(state.cartItems));
       },
 
       removeCartItem: (state, action: PayloadAction<string>) => {
@@ -36,6 +42,8 @@ export const cartReducer = createSlice({
             (i) => i.productId !== action.payload
          );
          state.loading = false;
+
+         localStorage.setItem("cartItems", JSON.stringify(state.cartItems));
       },
 
       calculatePrice: (state) => {
@@ -59,8 +67,28 @@ export const cartReducer = createSlice({
       discountApply: (state, action: PayloadAction<number>) => {
          state.discount = action.payload;
       },
+
+      saveShippingInfo: (state, action: PayloadAction<ShippingInfo>) => {
+         state.shippingInfo = action.payload;
+
+         localStorage.setItem(
+            "shippingInfo",
+            JSON.stringify(state.shippingInfo)
+         );
+      },
+
+      resetCart: () => {
+         localStorage.clear();
+         initialState;
+      },
    },
 });
 
-export const { addFromCart, removeCartItem, calculatePrice, discountApply } =
-   cartReducer.actions;
+export const {
+   addFromCart,
+   removeCartItem,
+   calculatePrice,
+   discountApply,
+   saveShippingInfo,
+   resetCart,
+} = cartReducer.actions;

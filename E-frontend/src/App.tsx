@@ -11,6 +11,7 @@ import { userReducerInitialState } from "./types/reducer.types";
 import ProtectedRoute from "./components/ProtectedRoute";
 
 // lazy loading concept
+const CheckOut = lazy(() => import("./pages/CheckOut"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 const Loader = lazy(() => import("./components/Loader"));
 const Cart = lazy(() => import("./components/Cart"));
@@ -19,7 +20,6 @@ const Shipping = lazy(() => import("./pages/Shipping"));
 const Login = lazy(() => import("./pages/Login"));
 const Search = lazy(() => import("./pages/Search"));
 const Orders = lazy(() => import("./pages/Orders"));
-const OrderDetails = lazy(() => import("./components/OrderDetails"));
 
 // admin components
 const Transaction = lazy(() => import("./pages/admin/Transaction"));
@@ -93,7 +93,7 @@ function App() {
                >
                   <Route path='/shipping' element={<Shipping />} />
                   <Route path='/orders' element={<Orders />} />
-                  <Route path='/order/:id' element={<OrderDetails />} />
+                  <Route path='/pay' element={<CheckOut />} />
                </Route>
 
                {/* Admin Routes */}
@@ -129,7 +129,7 @@ function App() {
                   }
                ></Route> */}
 
-               <Route path='/404' element={<NotFound />} />
+               <Route path='*' element={<NotFound />} />
             </Routes>
          </Suspense>
          <Toaster position='bottom-center' />

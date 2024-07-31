@@ -1,11 +1,15 @@
-import { ChangeEvent, useEffect, useState } from "react";
+import axios from "axios";
+import { ChangeEvent, FormEvent, useEffect, useState } from "react";
+import toast from "react-hot-toast";
 import { BiArrowBack } from "react-icons/bi";
-import { useSelector } from "react-redux";
-import { Link, useNavigate } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
+import { saveShippingInfo } from "../redux/reducer/cartReducer";
+import { server } from "../redux/store";
 import { CartReducerInitialState } from "../types/reducer.types";
 
 export default function Shipping() {
-   const { cartItems } = useSelector(
+   const { cartItems, total } = useSelector(
       (state: { cartReducer: CartReducerInitialState }) => state.cartReducer
    );
 
@@ -18,6 +22,7 @@ export default function Shipping() {
    });
 
    const navigate = useNavigate();
+   const dispatch = useDispatch();
 
    const changeHandler = (
       e: ChangeEvent<HTMLInputElement | HTMLSelectElement>
@@ -31,12 +36,33 @@ export default function Shipping() {
       }
    }, [cartItems, navigate]);
 
+   const submitHandler = async (e: FormEvent<HTMLFormElement>) => {
+      e.preventDefault();
+      dispatch(saveShippingInfo(shippingInfo));
+      try {
+         const { data } = await axios.post(
+            `${server}/v1/payment/create`,
+            {
+               amount: total,
+            },
+            {
+               headers: { "Content-Type": "application/json" },
+            }
+         );
+         toast.success(data.message);
+         navigate("/pay", { state: data.clientSecret });
+      } catch (error) {
+         console.log(error);
+         toast.error("Something Went Wrong For Payment Create.");
+      }
+   };
+
    return (
       <div className='shipping'>
          <button onClick={() => navigate("/cart")}>
             <BiArrowBack />
          </button>
-         <form action=''>
+         <form onSubmit={submitHandler}>
             <h1>Shipping Address</h1>
             <input
                required
@@ -79,10 +105,8 @@ export default function Shipping() {
                value={shippingInfo.pinCode}
                onChange={changeHandler}
             />
-            <Link to={""}>
-               {" "}
-               <button>PAY NOW</button>
-            </Link>
+
+            <button type='submit'>PAY NOW</button>
          </form>
       </div>
    );
