@@ -1,3 +1,4 @@
+import axios from "axios";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { VscError } from "react-icons/vsc";
@@ -9,17 +10,13 @@ import {
    discountApply,
    removeCartItem,
 } from "../redux/reducer/cartReducer";
-import { CartReducerInitialState } from "../types/reducer.types";
+import { RootState, server } from "../redux/store";
 import { CartItem } from "../types/types";
 import CartItemCard from "./CartItems";
-import axios from "axios";
-import { server } from "../redux/store";
 
 export default function Cart() {
    const { cartItems, discount, shippingCharges, subtotal, tax, total } =
-      useSelector(
-         (state: { cartReducer: CartReducerInitialState }) => state.cartReducer
-      );
+      useSelector((state: RootState) => state.cartReducer);
 
    const dispatch = useDispatch();
 
@@ -79,7 +76,6 @@ export default function Cart() {
    }, [couponCode, dispatch]);
 
    /* This Code is direct effect of input field changes
-
    useEffect(() => {
       const { token, cancel } = axios.CancelToken.source(); // Request cancelation
 
@@ -131,6 +127,7 @@ export default function Cart() {
          <aside>
             <p>Subtotal: &#x20b9;{subtotal}</p>
             <p>Shipping Charges: &#x20b9;{shippingCharges}</p>
+            <span>above &#x20b9;1000 shippingCharges free</span>
             <p>
                <span>18%</span> Tax: &#x20b9;{tax}
             </p>
@@ -140,7 +137,6 @@ export default function Cart() {
             <p>
                <b>Total: &#x20b9;{total}</b>
             </p>
-
             <div>
                <input
                   type='text'
@@ -152,7 +148,6 @@ export default function Cart() {
                   Apply
                </button>
             </div>
-
             {couponCode &&
                (isValidCouponCode ? (
                   <span className='green'>&#x20b9;{discount} off</span>

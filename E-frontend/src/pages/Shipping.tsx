@@ -5,12 +5,11 @@ import { BiArrowBack } from "react-icons/bi";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { saveShippingInfo } from "../redux/reducer/cartReducer";
-import { server } from "../redux/store";
-import { CartReducerInitialState } from "../types/reducer.types";
+import { RootState, server } from "../redux/store";
 
 export default function Shipping() {
    const { cartItems, total } = useSelector(
-      (state: { cartReducer: CartReducerInitialState }) => state.cartReducer
+      (state: RootState) => state.cartReducer
    );
 
    const [shippingInfo, setShippingInfo] = useState({
@@ -33,6 +32,10 @@ export default function Shipping() {
    useEffect(() => {
       if (cartItems.length <= 0) {
          return navigate("/cart");
+      }
+
+      if (localStorage.getItem("shippingInfo")) {
+         setShippingInfo(JSON.parse(localStorage.getItem("shippingInfo")!));
       }
    }, [cartItems, navigate]);
 

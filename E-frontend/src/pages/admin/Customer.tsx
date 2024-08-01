@@ -12,7 +12,7 @@ import {
    useAllUsersQuery,
    useDeleteUserMutation,
 } from "../../redux/api/user.api";
-import { userReducerInitialState } from "../../types/reducer.types";
+import { RootState } from "../../redux/store";
 import { responseToast } from "../../utils/features";
 
 interface DataType {
@@ -52,9 +52,7 @@ const columns: Column<DataType>[] = [
 ];
 
 function Customer() {
-   const { user } = useSelector(
-      (state: { userReducer: userReducerInitialState }) => state.userReducer
-   );
+   const { user } = useSelector((state: RootState) => state.userReducer);
 
    const { isLoading, isError, error, data } = useAllUsersQuery(
       (user ?? {})._id!

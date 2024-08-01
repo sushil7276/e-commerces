@@ -1,6 +1,5 @@
 import mongoose from "mongoose";
 import { myCache } from "../app.js";
-import { keySet } from "../controllers/dashboard.controller.js";
 import { Product } from "../models/product.model.js";
 import { OrderItem, invalidateCacheProp } from "../types/types.js";
 
@@ -54,7 +53,12 @@ export const invalidateCache = ({
    }
 
    if (admin) {
-      myCache.del(keySet);
+      myCache.del([
+         "admin-stats",
+         "admin-pie-charts",
+         "admin-bar-charts",
+         "admin-line-charts",
+      ]);
    }
 };
 

@@ -9,14 +9,11 @@ import {
    useProductDetailsQuery,
    useUpdateProductMutation,
 } from "../../../redux/api/product.api";
-import { server } from "../../../redux/store";
-import { userReducerInitialState } from "../../../types/reducer.types";
+import { RootState, server } from "../../../redux/store";
 import { responseToast } from "../../../utils/features";
 
 const ProductManagement = () => {
-   const { user } = useSelector(
-      (state: { userReducer: userReducerInitialState }) => state.userReducer
-   );
+   const { user } = useSelector((state: RootState) => state.userReducer);
 
    const params = useParams();
    const navigate = useNavigate();

@@ -5,17 +5,10 @@ import { Product } from "../models/product.model.js";
 import { User } from "../models/user.model.js";
 import { getCache, percentage, setCache } from "../utils/features.js";
 
-export const keySet = [
-   "admin-stats",
-   "admin-pie-charts",
-   "admin-bar-charts",
-   "admin-line-charts",
-];
-
 // All Stats
 export const stats = TryCatch(async (req, res, next) => {
    let stats;
-   const key = keySet[0];
+   const key = "admin-stats";
 
    stats = getCache(key);
    if (!stats) {
@@ -67,7 +60,7 @@ export const stats = TryCatch(async (req, res, next) => {
       });
 
       const latestTransactionPromise = Order.find()
-         .select(["discount", "total", "status", "orderItem"])
+         .select(["discount", "total", "status", "orderItems"])
          .limit(4);
 
       const [
@@ -109,7 +102,7 @@ export const stats = TryCatch(async (req, res, next) => {
          0
       );
 
-      const percent = {
+      const changePercent = {
          revenue: percentage(thisMothRevenue, lastMonthRevenue),
          user: percentage(thisMonthUsers.length, lastMonthUsers.length),
          product: percentage(
@@ -128,19 +121,16 @@ export const stats = TryCatch(async (req, res, next) => {
          user: userCount,
          product: productCount,
          order: allOrder.length,
-         userRatio: {
-            male: userCount - femaleCount,
-            female: femaleCount,
-         },
+         revenue,
       };
 
       //modify Latest Transaction
       const modifyLatestTransaction = latestTransaction.map((i) => ({
-         id: i._id,
+         _id: i._id,
          discount: i.discount,
          amount: i.total,
          quantity: i.orderItems.length,
-         stats: i.status,
+         status: i.status,
       }));
 
       // Create Array for past 6 month value store
@@ -159,20 +149,23 @@ export const stats = TryCatch(async (req, res, next) => {
       });
 
       // Calculate Category wise Product Count
-      const categoriesObj = await categoryWiseProductCountRatio({
+      const categoryCount = await categoryWiseProductCountRatio({
          categories,
          productCount,
       });
 
       stats = {
-         revenue,
-         percent,
+         changePercent,
          count,
          chart: {
             order: orderMonthCount,
             revenue: orderMonthRevenue,
          },
-         categoriesObj,
+         userRatio: {
+            male: userCount - femaleCount,
+            female: femaleCount,
+         },
+         categoryCount,
          latestTransaction: modifyLatestTransaction,
       };
 
@@ -189,7 +182,7 @@ export const stats = TryCatch(async (req, res, next) => {
 // Pie - Charts
 export const pieCharts = TryCatch(async (req, res, next) => {
    let charts;
-   const key = keySet[1];
+   const key = "admin-pie-charts";
    charts = getCache(key);
 
    if (!charts) {
@@ -268,10 +261,20 @@ export const pieCharts = TryCatch(async (req, res, next) => {
          (prev, order) => prev + (order.discount || 0),
          0
       );
+
       let totalShippingCharges = allOrder.reduce(
          (prev, order) => prev + (order.shippingCharges || 0),
          0
       );
+
+      const marketingCost = Math.round(totalAmount * (30 / 100));
+
+      const netMargin =
+         totalAmount -
+         totalDiscount -
+         totalShippingCharges -
+         totalTax -
+         marketingCost;
 
       // for (let i = 0; i < orders.length; i++) {
       //    grossTotal += orders[i].subtotal;
@@ -282,11 +285,11 @@ export const pieCharts = TryCatch(async (req, res, next) => {
       // }
 
       const amount = {
-         grossTotal,
+         netMargin,
          totalTax,
          totalShippingCharges,
          totalDiscount,
-         totalAmount,
+         marketingCost,
       };
 
       /* 
@@ -329,7 +332,7 @@ export const pieCharts = TryCatch(async (req, res, next) => {
 // Bar - Charts
 export const barCharts = TryCatch(async (req, res, next) => {
    let charts;
-   const key = keySet[2];
+   const key = "admin-bar-charts";
 
    charts = getCache(key);
 
@@ -400,7 +403,7 @@ export const barCharts = TryCatch(async (req, res, next) => {
 // Line - Charts
 export const lineCharts = TryCatch(async (req, res, next) => {
    let charts;
-   const key = keySet[3];
+   const key = "admin-line-charts";
 
    charts = getCache(key);
 
@@ -530,3 +533,4 @@ const pastMonthCounting = ({
    });
    return data;
 };
+//

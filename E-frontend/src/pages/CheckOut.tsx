@@ -9,14 +9,11 @@ import { FormEvent, useState } from "react";
 import toast from "react-hot-toast";
 import { useDispatch, useSelector } from "react-redux";
 import { Navigate, useLocation, useNavigate } from "react-router-dom";
-import {
-   CartReducerInitialState,
-   userReducerInitialState,
-} from "../types/reducer.types";
-import { NewOrderRequest } from "../types/api.types";
 import { useCreateOrderMutation } from "../redux/api/order.api";
-import { responseToast } from "../utils/features";
 import { resetCart } from "../redux/reducer/cartReducer";
+import { RootState } from "../redux/store";
+import { NewOrderRequest } from "../types/api.types";
+import { responseToast } from "../utils/features";
 
 // Make sure to call `loadStripe` outside of a component’s render to avoid
 // recreating the `Stripe` object on every render.
@@ -30,9 +27,7 @@ const CheckoutForm = () => {
    const navigate = useNavigate();
    const dispatch = useDispatch();
 
-   const { user } = useSelector(
-      (state: { userReducer: userReducerInitialState }) => state.userReducer
-   );
+   const { user } = useSelector((state: RootState) => state.userReducer);
 
    const {
       shippingInfo,
@@ -42,9 +37,7 @@ const CheckoutForm = () => {
       discount,
       shippingCharges,
       total,
-   } = useSelector(
-      (state: { cartReducer: CartReducerInitialState }) => state.cartReducer
-   );
+   } = useSelector((state: RootState) => state.cartReducer);
 
    const [isProcessing, setIsProcessing] = useState<boolean>(false);
 
@@ -119,7 +112,7 @@ const CheckoutForm = () => {
                disabled={isProcessing}
                style={{ opacity: isProcessing ? "0.5" : 1 }}
             >
-               {isProcessing ? "Processing" : "Pay"}
+               {isProcessing ? "Processing" : "Pay"} : {total}
             </button>
          </form>
          <button className='copyButton' onClick={copyHandle}>

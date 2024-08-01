@@ -10,8 +10,7 @@ import Loader from "../../components/Loader";
 import { CustomError } from "../../types/api.types";
 
 import { useAllProductsQuery } from "../../redux/api/product.api";
-import { server } from "../../redux/store";
-import { userReducerInitialState } from "../../types/reducer.types";
+import { RootState, server } from "../../redux/store";
 
 interface DataType {
    photo: ReactElement;
@@ -45,9 +44,7 @@ const columns: Column<DataType>[] = [
 ];
 
 const Product = () => {
-   const { user } = useSelector(
-      (state: { userReducer: userReducerInitialState }) => state.userReducer
-   );
+   const { user } = useSelector((state: RootState) => state.userReducer);
 
    const { isError, isLoading, error, data } = useAllProductsQuery(
       (user ?? {})._id!
