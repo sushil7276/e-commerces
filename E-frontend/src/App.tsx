@@ -39,7 +39,7 @@ const BarCharts = lazy(() => import("./pages/admin/charts/BarCharts"));
 const PieCharts = lazy(() => import("./pages/admin/charts/PieCharts"));
 const LineCharts = lazy(() => import("./pages/admin/charts/LineCharts"));
 
-// app Component
+// Admin App Component
 const Stopwatch = lazy(() => import("./pages/admin/app/Stopwatch"));
 const Coupon = lazy(() => import("./pages/admin/app/Coupon"));
 const Toss = lazy(() => import("./pages/admin/app/Toss"));

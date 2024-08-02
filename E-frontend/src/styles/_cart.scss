@@ -134,20 +134,17 @@
          // }
       }
 
-      > a {
+      button {
          width: 100%;
-         button {
-            width: 100%;
-            @include btn(1rem, $color3, $color1);
-            border-radius: 5px;
-            font-size: 1.05rem;
-            letter-spacing: 2px;
-            text-transform: uppercase;
-            transition: all 0.3s;
+         @include btn(1rem, $color3, $color1);
+         border-radius: 5px;
+         font-size: 1.05rem;
+         letter-spacing: 2px;
+         text-transform: uppercase;
+         transition: all 0.3s;
 
-            &:hover {
-               opacity: 0.8;
-            }
+         &:hover {
+            opacity: 0.8;
          }
       }
    }

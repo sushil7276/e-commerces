@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { VscError } from "react-icons/vsc";
 import { useDispatch, useSelector } from "react-redux";
-import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import {
    addFromCart,
    calculatePrice,
@@ -15,10 +15,13 @@ import { CartItem } from "../types/types";
 import CartItemCard from "./CartItems";
 
 export default function Cart() {
+   const { user } = useSelector((state: RootState) => state.userReducer);
+
    const { cartItems, discount, shippingCharges, subtotal, tax, total } =
       useSelector((state: RootState) => state.cartReducer);
 
    const dispatch = useDispatch();
+   const navigate = useNavigate();
 
    const incrementHandler = (cartItem: CartItem) => {
       if (cartItem.stock === cartItem.quantity) {
@@ -105,6 +108,14 @@ export default function Cart() {
    }, [couponCode, dispatch]);
 */
 
+   const goToShippingPage = () => {
+      if (!user) {
+         navigate("/login");
+      } else {
+         navigate("/shipping");
+      }
+   };
+
    return (
       <div className='cart'>
          <main>
@@ -156,9 +167,8 @@ export default function Cart() {
                      Invalid Coupon <VscError />
                   </span>
                ))}
-            <Link to={"/shipping"}>
-               <button>Shipping</button>
-            </Link>
+
+            <button onClick={goToShippingPage}>Shipping</button>
          </aside>
       </div>
    );

@@ -78,7 +78,7 @@ export const cartReducer = createSlice({
       },
 
       resetCart: () => {
-         localStorage.clear();
+         localStorage.removeItem("cartItems");
          initialState;
       },
    },

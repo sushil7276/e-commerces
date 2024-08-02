@@ -5,10 +5,14 @@ import "./styles/app.scss";
 import { Provider } from "react-redux";
 import { store } from "./redux/store.ts";
 
+// Vercel Speed Insights
+import { SpeedInsights } from "@vercel/speed-insights/react";
+
 ReactDOM.createRoot(document.getElementById("root")!).render(
    <React.StrictMode>
       <Provider store={store}>
          <App />
+         <SpeedInsights />
       </Provider>
    </React.StrictMode>
 );
