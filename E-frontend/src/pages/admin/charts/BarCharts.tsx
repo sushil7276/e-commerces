@@ -7,21 +7,24 @@ import toast from "react-hot-toast";
 import { CustomError } from "../../../types/api.types";
 import { useEffect, useState } from "react";
 import Loader from "../../../components/Loader";
+import { getLastMonths } from "../../../utils/features";
 
-const months = [
-   "January",
-   "February",
-   "March",
-   "April",
-   "May",
-   "June",
-   "July",
-   "Aug",
-   "Sept",
-   "Oct",
-   "Nov",
-   "Dec",
-];
+// const months = [
+//    "January",
+//    "February",
+//    "March",
+//    "April",
+//    "May",
+//    "June",
+//    "July",
+//    "Aug",
+//    "Sept",
+//    "Oct",
+//    "Nov",
+//    "Dec",
+// ];
+
+const { last6Month, last12Month } = getLastMonths();
 
 const BarCharts = () => {
    const { user } = useSelector((state: RootState) => state.userReducer);
@@ -63,6 +66,7 @@ const BarCharts = () => {
                <>
                   <section>
                      <BarChart
+                        labels={last6Month}
                         data_1={products}
                         data_2={users}
                         title_1='Products'
@@ -82,7 +86,7 @@ const BarCharts = () => {
                         title_2=''
                         bgColor_1={`hsl(180, 40%, 50%)`}
                         bgColor_2=''
-                        labels={months}
+                        labels={last12Month}
                      />
                      <h2>Orders throughout the year</h2>
                   </section>

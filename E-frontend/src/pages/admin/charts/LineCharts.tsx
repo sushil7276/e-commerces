@@ -7,21 +7,9 @@ import toast from "react-hot-toast";
 import { CustomError } from "../../../types/api.types";
 import { useEffect, useState } from "react";
 import Loader from "../../../components/Loader";
+import { getLastMonths } from "../../../utils/features";
 
-const months = [
-   "January",
-   "February",
-   "March",
-   "April",
-   "May",
-   "June",
-   "July",
-   "Aug",
-   "Sept",
-   "Oct",
-   "Nov",
-   "Dec",
-];
+const { last12Month: months } = getLastMonths();
 
 const LineCharts = () => {
    const { user } = useSelector((state: RootState) => state.userReducer);
