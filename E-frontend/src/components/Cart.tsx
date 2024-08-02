@@ -127,7 +127,7 @@ export default function Cart() {
          <aside>
             <p>Subtotal: &#x20b9;{subtotal}</p>
             <p>Shipping Charges: &#x20b9;{shippingCharges}</p>
-            <span>above &#x20b9;1000 shippingCharges free</span>
+            <span>Above &#x20b9;1000 Shipping Charges Free</span>
             <p>
                <span>18%</span> Tax: &#x20b9;{tax}
             </p>

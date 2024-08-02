@@ -30,7 +30,7 @@ export default function Home() {
 
          {/* Product Heading  */}
          <h1>
-            LATEST PRODUCT
+            LATEST PRODUCTS
             <Link to={"/search"} className='findMore'>
                MORE
             </Link>

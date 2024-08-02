@@ -1,14 +1,14 @@
-import { Suspense, lazy, useEffect } from "react";
-import { BrowserRouter, Route, Routes } from "react-router-dom";
-import Header from "./components/Header";
-import { Toaster } from "react-hot-toast";
 import { onAuthStateChanged } from "firebase/auth";
-import { auth } from "./firebase";
+import { Suspense, lazy, useEffect } from "react";
+import { Toaster } from "react-hot-toast";
 import { useDispatch, useSelector } from "react-redux";
-import { userExist, userNotExist } from "./redux/reducer/userReducer";
-import { getUser } from "./redux/api/user.api";
-import { userReducerInitialState } from "./types/reducer.types";
+import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
+import Header from "./components/Header";
 import ProtectedRoute from "./components/ProtectedRoute";
+import { auth } from "./firebase";
+import { getUser } from "./redux/api/user.api";
+import { userExist, userNotExist } from "./redux/reducer/userReducer";
+import { userReducerInitialState } from "./types/reducer.types";
 
 // lazy loading concept
 const CheckOut = lazy(() => import("./pages/CheckOut"));
@@ -20,6 +20,7 @@ const Shipping = lazy(() => import("./pages/Shipping"));
 const Login = lazy(() => import("./pages/Login"));
 const Search = lazy(() => import("./pages/Search"));
 const Orders = lazy(() => import("./pages/Orders"));
+const OrderShow = lazy(() => import("./components/OrderShow"));
 
 // admin components
 const Transaction = lazy(() => import("./pages/admin/Transaction"));
@@ -47,6 +48,7 @@ function App() {
    const { loading, user } = useSelector(
       (state: { userReducer: userReducerInitialState }) => state.userReducer
    );
+
    const dispatch = useDispatch();
 
    useEffect(() => {
@@ -55,12 +57,12 @@ function App() {
          if (gUser) {
             const data = await getUser(gUser.uid);
             dispatch(userExist(data.user));
+            <Navigate to={"/"} />;
          } else {
             dispatch(userNotExist());
          }
       });
-      // eslint-disable-next-line react-hooks/exhaustive-deps
-   }, []);
+   }, [user, dispatch]);
 
    return loading ? (
       <Loader />
@@ -93,33 +95,14 @@ function App() {
                >
                   <Route path='/shipping' element={<Shipping />} />
                   <Route path='/orders' element={<Orders />} />
+                  <Route path='/orders/details/:id' element={<OrderShow />} />
+
                   <Route path='/pay' element={<CheckOut />} />
                </Route>
 
                {/* Admin Routes */}
-               <Route path='/dashboard' element={<AdminSidebar />} />
-               <Route path='/admin/dashboard' element={<Dashboard />} />
-               <Route path='/admin/product' element={<Product />} />
-               <Route path='/admin/transaction' element={<Transaction />} />
-               <Route path='/admin/customer' element={<Customer />} />
-               <Route path='/admin/product/new' element={<NewProduct />} />
-               <Route
-                  path='/admin/product/:id'
-                  element={<ProductManagement />}
-               />
 
                <Route
-                  path='/admin/transaction/:id'
-                  element={<TransactionManagement />}
-               />
-               <Route path='/admin/chart/bar' element={<BarCharts />} />
-               <Route path='/admin/chart/pie' element={<PieCharts />} />
-               <Route path='/admin/chart/line' element={<LineCharts />} />
-               <Route path='/admin/app/stopwatch' element={<Stopwatch />} />
-               <Route path='/admin/app/coupon' element={<Coupon />} />
-               <Route path='/admin/app/toss' element={<Toss />} />
-
-               {/* <Route
                   element={
                      <ProtectedRoute
                         isAuthenticated={user ? true : false}
@@ -127,7 +110,29 @@ function App() {
                         adminRoute={true}
                      />
                   }
-               ></Route> */}
+               >
+                  <Route path='/dashboard' element={<AdminSidebar />} />
+                  <Route path='/admin/dashboard' element={<Dashboard />} />
+                  <Route path='/admin/product' element={<Product />} />
+                  <Route path='/admin/transaction' element={<Transaction />} />
+                  <Route path='/admin/customer' element={<Customer />} />
+                  <Route path='/admin/product/new' element={<NewProduct />} />
+                  <Route
+                     path='/admin/product/:id'
+                     element={<ProductManagement />}
+                  />
+
+                  <Route
+                     path='/admin/transaction/:id'
+                     element={<TransactionManagement />}
+                  />
+                  <Route path='/admin/chart/bar' element={<BarCharts />} />
+                  <Route path='/admin/chart/pie' element={<PieCharts />} />
+                  <Route path='/admin/chart/line' element={<LineCharts />} />
+                  <Route path='/admin/app/stopwatch' element={<Stopwatch />} />
+                  <Route path='/admin/app/coupon' element={<Coupon />} />
+                  <Route path='/admin/app/toss' element={<Toss />} />
+               </Route>
 
                <Route path='*' element={<NotFound />} />
             </Routes>

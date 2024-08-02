@@ -112,7 +112,7 @@ export default function Search() {
          </aside>
 
          <main>
-            <h1 className='heading'>Product</h1>
+            <h1 className='heading'>Products</h1>
             <input
                type='text'
                placeholder='Search by name...'

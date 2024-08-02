@@ -73,7 +73,7 @@ export default function Orders() {
                      </span>
                   </span>
                ),
-               action: <Link to={`/admin/transaction/${i._id}`}>View</Link>,
+               action: <Link to={`/orders/details/${i._id}`}>View</Link>,
             }))
          );
       }
