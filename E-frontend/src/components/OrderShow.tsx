@@ -1,5 +1,5 @@
 import { IoMdClose } from "react-icons/io";
-import { Link, useNavigate, useParams } from "react-router-dom";
+import { Link, Navigate, useNavigate, useParams } from "react-router-dom";
 import { useDetailsOrderQuery } from "../redux/api/order.api";
 import { server } from "../redux/store";
 import { Order, OrderItem } from "../types/types";
@@ -46,7 +46,9 @@ const OrderShow = () => {
       navigate("/orders");
    };
 
-   if (isError) return navigate("/");
+   if (isError) {
+      <Navigate to={"/404"} />;
+   }
 
    return (
       <div className='order-details-container'>
